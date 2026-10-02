@@ -154,7 +154,7 @@
   }
   function readout(group,paragraphs) { $(group+'-readout').innerHTML=paragraphs.map(s=>'<p>'+s+'</p>').join(''); }
   function record(group,parameters,results,curves) {
-    records[group]={format:'quantum-transport-notes/1',version:'1.3.0',experiment:group,
+    records[group]={format:'quantum-transport-notes/1',version:'1.3.1',experiment:group,
       units:{energy:'eV',current:'microampere',time:'fs',spectralDensity:'1/eV'},
       conventions:{spinSpecies:1,retardedSign:'E + i eta',leadEta:0,leadCurrent:'positive entering device',model:'noninteracting, coherent, elastic; finite eta interpreted as empty absorber'},
       parameters,results,curves};
@@ -227,9 +227,14 @@
   }
   function renderEta() {
     const s=state.eta, p={epsilon:0,gammaL:s.gamma/2,gammaR:s.gamma/2,eta:s.eta,limit:s.limit,intervals:s.intervals,offset:s.alignment*2*s.limit/s.intervals};
-    if(s.gamma+2*s.eta===0) {
+    const isolatedPole=s.gamma+2*s.eta===0;
+    const figure=$('eta-plot').closest('figure');
+    figure.querySelector('.legend').hidden=isolatedPole;
+    figure.querySelector('figcaption').hidden=isolatedPole;
+    $('eta-plot').setAttribute('aria-label',isolatedPole?'An isolated level has a delta-function spectrum':'Spectral density compared with sampled integration points');
+    if(isolatedPole) {
       readout('eta',[`<strong>An isolated level at ${math`\eta=0`} has a delta-function spectrum.</strong> Choose a positive ${math`\eta`} to sample it. No ordinary finite curve or uniform-grid integral is defined at its pole.`]);
-      $('eta-plot').innerHTML=svgMath(340,150,tex`\delta(E):\quad\text{choose }\eta>0`,{anchor:'middle',fontSize:24})+svgMath(340,185,tex`\text{to draw a regularized spectrum.}`,{anchor:'middle',fontSize:18});
+      $('eta-plot').innerHTML='<title>An isolated level has a delta-function spectrum</title><rect width="680" height="340" fill="white"/>'+svgMath(340,150,tex`A(E)/(2\pi)=\delta(E)`,{anchor:'middle',fontSize:24})+svgMath(340,185,tex`\text{Choose }\eta>0\text{ to draw a regularized spectrum.}`,{anchor:'middle',fontSize:18});
       $('eta-table').innerHTML=''; record('eta',p,{distribution:'delta(E)'},[]); return;
     }
     const d=P.etaDiagnostics(p), half=d.width/2;
@@ -282,9 +287,9 @@
     if(kind==='json') content=JSON.stringify(r,null,2);
     else {
       const clone=$(group+'-plot').cloneNode(true), ns='http://www.w3.org/2000/svg';
-      clone.setAttribute('viewBox','0 0 680 440');clone.setAttribute('width','680');clone.setAttribute('height','440');
+      clone.setAttribute('viewBox','0 0 680 470');clone.setAttribute('width','680');clone.setAttribute('height','470');
       const metadata=document.createElementNS(ns,'metadata');
-      metadata.textContent=JSON.stringify({experiment:group,parameters:r.parameters,units:r.units,conventions:r.conventions});
+      metadata.textContent=JSON.stringify({format:r.format,version:r.version,experiment:group,parameters:r.parameters,units:r.units,conventions:r.conventions});
       clone.prepend(metadata);
       const legends={level:[tex`\text{Transmission }T`,tex`\text{Reflection }R`],chain:[tex`\text{Transmission}`],
         fano:[tex`\text{With side orbital}`,tex`\text{Without side orbital}`],bias:[tex`\text{Transmission }T`,tex`f_L`,tex`f_R`],
@@ -297,8 +302,15 @@
         bias:tex`\varepsilon_0=${numberTex(p.epsilon)}\,\mathrm{eV};\quad V=${numberTex(p.bias)}\,\mathrm{V};\quad k_BT=${numberTex(p.kT)}\,\mathrm{eV};\quad\Gamma_L/\Gamma=${numberTex(p.gammaL/.4)}`,
         eta:tex`\Gamma=${numberTex(p.gammaL+p.gammaR)}\,\mathrm{eV};\quad\eta=${numberTex(p.eta)}\,\mathrm{eV};\quad\text{window half-width }${numberTex(p.limit)}\,\mathrm{eV}`
       };
+      const captionDetails={
+        level:tex`E_{\mathrm{probe}}=${numberTex(p.probe)}\,\mathrm{eV};\quad\text{wide-band leads}`,
+        chain:tex`E_{\mathrm{probe}}=${numberTex(p.probe)}\,\mathrm{eV};\quad t_\ell=${numberTex(p.leadHopping)}\,\mathrm{eV};\quad\varepsilon_\ell=${numberTex(p.leadOnsite)}\,\mathrm{eV}`,
+        fano:tex`E_{\mathrm{probe}}=${numberTex(p.probe)}\,\mathrm{eV};\quad\varepsilon_0=${numberTex(p.epsilon)}\,\mathrm{eV}`,
+        bias:tex`\Gamma_L+\Gamma_R=${numberTex(p.gammaL+p.gammaR)}\,\mathrm{eV};\quad\eta=${numberTex(p.eta)}\,\mathrm{eV}`,
+        eta:group==='eta' ? tex`\text{Intervals}=${p.intervals};\quad\Delta E=${Number((2*p.limit/p.intervals).toPrecision(8))}\,\mathrm{eV};\quad\text{grid shift}=${Number(p.offset.toPrecision(8))}\,\mathrm{eV}` : ''
+      };
       const footer=document.createElementNS(ns,'g');footer.setAttribute('font-family','Times New Roman,serif');footer.setAttribute('font-size','15');footer.setAttribute('fill','#111');
-      let s='<rect x="0" y="340" width="680" height="100" fill="white"/>';
+      let s='<rect x="0" y="340" width="680" height="130" fill="white"/>';
       (legends[group]||[]).forEach((label,i)=>{
         const x=34+i*215,curve=r.curves[i]; if(!curve)return;
         s+=line(x,361,x+25,361,'stroke="'+curve.color+'" stroke-width="2"'+(curve.dash?' stroke-dasharray="5 3"':''));
@@ -306,7 +318,8 @@
       });
       if(group==='eta' && r.curves.length)s+='<circle cx="477" cy="361" r="2.5"/>'+text(489,366,'Integration samples');
       s+=svgMath(34,397,captions[group],{fontSize:14});
-      s+=text(34,422,'One spin species. Copyright (c) 2026 Neil Yuanting Li. MIT License.');
+      s+=svgMath(34,420,captionDetails[group],{fontSize:14});
+      s+=text(34,451,'One spin species. Copyright (c) 2026 Neil Yuanting Li. MIT License.');
       footer.innerHTML=s;clone.append(footer);
       content=new XMLSerializer().serializeToString(clone);
     }
@@ -335,7 +348,7 @@
     for (const group of Object.keys(state)) {
       $(group+'-controls').insertAdjacentHTML('beforeend','<button data-reset="'+group+'">Reset this experiment</button>');
       document.querySelector('[data-export="'+group+'"]').innerHTML='<button data-save="'+group+':svg">Save figure (SVG)</button><button data-save="'+group+':json">Save calculation (JSON)</button><a id="'+group+'-download" hidden></a>';
-      document.querySelector('[data-export="'+group+'"]').insertAdjacentHTML('afterend','<details id="'+group+'-export-source" hidden><summary>Inspect export</summary><pre tabindex="0" aria-label="Export source"></pre></details>');
+      document.querySelector('[data-export="'+group+'"]').insertAdjacentHTML('afterend','<details id="'+group+'-export-source" class="export-source" hidden><summary>Inspect export</summary><pre tabindex="0" aria-label="Export source"></pre></details>');
     }
     document.addEventListener('input',event=>{
       const {group,key}=event.target.dataset;

@@ -29,11 +29,11 @@ Read the [connected derivation](docs/notes.html#contents) for the retarded resol
 lead elimination, $\Gamma$, the Caroli trace, occupations, and lifetime conventions.
 [Annotated references](docs/references.html) identify primary papers and Datta's
 teaching. Use the derivation's contents list to jump to a topic, or the reading links below each experiment to move backward, continue, or open its derivation. Each experiment has a prediction question, an expandable explanation, reset and example buttons. “Save figure” exports
-the plotted SVG; “Save calculation” exports model parameters, units, results,
+the plotted SVG, with the probe or grid settings in its caption; “Save calculation” exports model parameters, units, results,
 and curve samples as JSON. A persistent download link permits another attempt; changing parameters clears
 the previous snapshot.
 The export source is also available in an expandable text panel for inspection or copying.
-These exports are records, not importable sessions.
+These exports are records, not importable sessions. Printing omits controls, navigation, and raw export previews.
 
 ## Models and conventions
 

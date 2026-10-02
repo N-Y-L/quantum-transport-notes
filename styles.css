@@ -63,7 +63,7 @@ footer { border-top: 1px solid #999; margin-top: 30px; padding-top: 15px; font-s
 }
 @media print {
   body { margin: 0; max-width: none; font-size: 11pt; }
-  nav, .controls, .buttons, footer, .skip-link { display: none; }
+  nav, .reading-nav, .contents, .controls, .buttons, .export-source, footer, .skip-link { display: none; }
   .workspace { display: block; }
   figure { break-inside: avoid; }
 }
