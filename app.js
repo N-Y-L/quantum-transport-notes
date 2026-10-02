@@ -6,6 +6,7 @@
   const blue = '#145b91', red = '#9b392b', gray = '#666';
   const records = {};
   const downloads = {};
+  const errors = {};
   const defaults = {
     level: { epsilon: 0, gammaL: .5, gammaR: .5, probe: 0 },
     chain: { sites: 5, hopping: 1, contact: 1, onsite: 0, probe: .3 },
@@ -50,15 +51,17 @@
     return [...new Set(energies)].sort((a,b)=>a-b).map(E => [E, fn(E)]);
   }
   function plot(id, curves, options = {}) {
-    const svg = $(id), W = 680, H = 340, left = 62, right = 18, top = 20, bottom = 50;
+    const spectralPlot = options.ylabel && options.ylabel.startsWith('Spectral');
+    const svg = $(id), W = 680, H = 340, left = spectralPlot ? 90 : 62, right = 18, top = 20, bottom = 50;
     const {xmin=-3,xmax=3,ymin=0,ymax=1.05,ylabel='Probability',probe=null,verticals=[],dots=[]} = options;
+    const ticks = options.yticks || (ymin===0 && ymax===1.05 ? [0,.25,.5,.75,1] : Array.from({length:5},(_,i)=>ymin+(ymax-ymin)*i/4));
     const x = E => left + (E-xmin)/(xmax-xmin)*(W-left-right);
     const y = value => H-bottom-(value-ymin)/(ymax-ymin)*(H-top-bottom);
     const clip = id+'-clip';
     let html = '<title>'+svg.getAttribute('aria-label')+'</title><rect width="680" height="340" fill="white"/><defs><clipPath id="'+clip+'"><rect x="'+left+'" y="'+top+'" width="'+(W-left-right)+'" height="'+(H-top-bottom)+'"/></clipPath></defs><g font-family="Times New Roman,serif" font-size="16" fill="#111">';
-    for (let i=0;i<=4;i++) {
-      const value=ymin+(ymax-ymin)*i/4, py=y(value);
-      html+=line(left,py,W-right,py,'stroke="#ddd"')+text(left-8,py+5,fmt(value,2),'text-anchor="end"');
+    for (const value of ticks) {
+      const py=y(value);
+      html+=line(left,py,W-right,py,'stroke="#ddd"')+text(left-8,py+5,spectralPlot?Number(value.toPrecision(3)).toString():fmt(value,2),'text-anchor="end"');
     }
     for (let i=0;i<=6;i++) {
       const E=xmin+(xmax-xmin)*i/6, px=x(E);
@@ -82,6 +85,7 @@
     html+='</g></g>'; svg.innerHTML=html;
   }
   function schematic(id, mode, p) {
+    if(mode==='fano') $(id).setAttribute('aria-label',p.coupling>0?'A side orbital attached to the conducting level':'A side orbital disconnected from the conducting level');
     let s='<title>'+$(id).getAttribute('aria-label')+'</title><g font-family="Times New Roman,serif" font-size="18" fill="#111" stroke="#111" stroke-width="1.5">';
     s+='<rect x="14" y="28" width="93" height="43" fill="white"/><rect x="573" y="28" width="93" height="43" fill="white"/>';
     s+=text(60,55,'L','text-anchor="middle" stroke="none"')+text(620,55,'R','text-anchor="middle" stroke="none"');
@@ -95,7 +99,7 @@
     } else {
       s+='<circle cx="340" cy="49" r="13" fill="white"/>';
       if(mode==='fano') {
-        s+=line(340,62,340,108)+'<circle cx="340" cy="113" r="10" fill="white"/>';
+        s+=(p.coupling>0?line(340,62,340,108):'')+'<circle cx="340" cy="113" r="10" fill="white"/>';
         s+=text(363,119,'εs = '+fmt(p.sideEnergy)+' eV','stroke="none"')+text(360,84,'v = '+fmt(p.coupling)+' eV','stroke="none"');
       } else {
         s+=text(340,91,'ε₀ = '+fmt(p.epsilon)+' eV','text-anchor="middle" stroke="none"');
@@ -122,7 +126,7 @@
   }
   function readout(group,paragraphs) { $(group+'-readout').innerHTML=paragraphs.map(s=>'<p>'+s+'</p>').join(''); }
   function record(group,parameters,results,curves) {
-    records[group]={format:'quantum-transport-notes/1',version:'1.0.0',experiment:group,
+    records[group]={format:'quantum-transport-notes/1',version:'1.1.0',experiment:group,
       units:{energy:'eV',current:'microampere',time:'fs',spectralDensity:'1/eV'},
       conventions:{spinSpecies:1,retardedSign:'E + i eta',leadEta:0,leadCurrent:'positive entering device',model:'noninteracting, coherent, elastic; finite eta interpreted as empty absorber'},
       parameters,results,curves};
@@ -152,28 +156,27 @@
   }
   function renderFano() {
     const p={...state.fano,epsilon:0,gammaL:.5,gammaR:.5,eta:0};
-    // The antiresonance narrows quadratically with v. Resolve its neighborhood
-    // explicitly instead of drawing a falsely broad notch between coarse nodes.
-    const localWidth=p.coupling*p.coupling*.5/(p.sideEnergy*p.sideEnergy+.25);
-    const local=p.coupling>0?Array.from({length:801},(_,i)=>p.sideEnergy+(i-400)*localWidth/20):[];
-    const values=sample(E=>P.fano(E,p).T,-3,3,900,[p.sideEnergy,p.probe,...local]);
+    const values=window.TransportSampling.fanoCurve(p);
     const curves=[{color:blue,data:values},{color:gray,dash:true,data:sample(E=>P.resonantLevel(E,p).T,-3,3)}];
     plot('fano-plot',curves,{probe:p.probe}); schematic('fano-schematic','fano',p);
     const r=P.fano(p.probe,p), atSide=P.fano(p.sideEnergy,p);
     readout('fano',[
       '<strong>At E = '+fmt(p.probe)+' eV: T = '+fmt(r.T)+', R = '+fmt(r.R)+'.</strong>',
       p.coupling>0 ? 'At the side-orbital energy E = εs = '+fmt(p.sideEnergy)+' eV, T = '+fmt(atSide.T)+'. The full incident flux is reflected; no probability is absorbed.' : 'The side orbital is disconnected. Its bound state does not enter the transmission. Its occupation requires an initial condition, and its delta-function spectral weight is not drawn.',
-      'Move εs while keeping the conducting orbital fixed: the zero follows εs. Changing v controls the width and hybridized resonances.'
+      p.coupling>0 ? 'Move εs while keeping the conducting orbital fixed: the zero follows εs. Changing v controls the width and hybridized resonances.' : 'At v = 0, moving εs changes only the isolated bound-state energy. Transmission through the conducting orbital is unchanged.'
     ]); record('fano',p,r,curves);
   }
   function renderBias() {
     const s=state.bias, p={epsilon:s.epsilon,gammaL:.4*s.fraction,gammaR:.4*(1-s.fraction),bias:s.bias,kT:s.kT,eta:0,limit:40,intervals:16000};
     const muL=p.bias/2,muR=-p.bias/2;
     const energies=sample(E=>E,-3,3,900,[muL,muR,p.epsilon]).map(([E])=>E);
+    // At zero temperature, the occupation has a discontinuity. A vertical
+    // segment displays its one-sided limits without inventing thermal width.
+    const occupationCurve = mu => p.kT===0 ? [[-3,1],[mu,1],[mu,0],[3,0]] : energies.map(E=>[E,P.fermi(E,mu,p.kT)]);
     const curves=[
       {color:blue,data:energies.map(E=>[E,P.resonantLevel(E,p).T])},
-      {color:red,data:energies.map(E=>[E,P.fermi(E,muL,p.kT)])},
-      {color:'#555',dash:true,data:energies.map(E=>[E,P.fermi(E,muR,p.kT)])}
+      {color:red,data:occupationCurve(muL)},
+      {color:'#555',dash:true,data:occupationCurve(muR)}
     ];
     plot('bias-plot',curves,{ylabel:'T or occupation',verticals:[muL,muR]});
     const r=P.bias(p), fine=P.bias({...p,intervals:32000});
@@ -181,7 +184,7 @@
     readout('bias',[
       '<strong>I = '+fmt(fine.I,5)+' μA; n = '+fmt(fine.n,5)+' electron per spin orbital.</strong> μL = '+fmt(muL)+' eV; μR = '+fmt(muR)+' eV.',
       'ΓL = '+fmt(p.gammaL)+' eV, ΓR = '+fmt(p.gammaR)+' eV. IL + IR = '+fmt(fine.IL+fine.IR)+' μA. Temperature = '+fmt(p.kT/P.constants.kBoltzmannEV,1)+' K.',
-      'Integration: −40 to +40 eV, 32,000 base intervals (ΔE = 0.0025 eV); at zero temperature integration also splits at the chemical potentials. Halving ΔE changes I by '+fmt(Math.abs(fine.I-r.I),7)+' μA and n by '+fmt(Math.abs(fine.n-r.n),7)+'. The finite window omits '+fmt(1-exactArea,5)+' of the total spectral weight; this bounds the omitted occupation, independently of grid error. The stated n is the finite-window result.'
+      'Integration: −40 to +40 eV, 32,000 base intervals (ΔE = 0.0025 eV); at zero temperature integration also splits at the chemical potentials. Halving ΔE changes I by '+fmt(Math.abs(fine.I-r.I),7)+' μA and n by '+fmt(Math.abs(fine.n-r.n),7)+'. The finite window omits '+fmt(1-exactArea,5)+' of the total spectral weight; this bounds the omitted occupation, independently of grid error. The stated n is the finite-window result.'+(p.epsilon===0 && p.bias===0?' The exact infinite-window equilibrium occupation is n = 1/2 by symmetry.':'')
     ]); record('bias',{...p,intervals:32000}, {...fine,coarser:r,exactWindowSpectralArea:exactArea},curves);
   }
   // Independent closed-form zero-temperature integrals make the sink-current
@@ -232,8 +235,18 @@
   }
   const renderers={level:renderLevel,chain:renderChain,fano:renderFano,bias:renderBias,eta:renderEta};
   function render(group) {
-    try {sync(group);renderers[group]();$('app-error').hidden=true;}
-    catch(error) {$('app-error').textContent='Calculation could not finish: '+error.message;$('app-error').hidden=false;console.error(error);}
+    // Exports describe one parameter snapshot. Hide it when those parameters
+    // change so a previous download cannot be mistaken for the current plot.
+    const source=$(group+'-export-source'), anchor=$(group+'-download');
+    if(source) {source.hidden=true;source.open=false;source.querySelector('pre').textContent='';}
+    if(anchor) {anchor.hidden=true;anchor.removeAttribute('href');}
+    for(const kind of ['json','svg']) {
+      const key=group+kind; if(downloads[key]) {URL.revokeObjectURL(downloads[key]);delete downloads[key];}
+    }
+    try {sync(group);renderers[group]();delete errors[group];}
+    catch(error) {delete records[group];errors[group]=error.message;console.error(error);}
+    $('app-error').textContent=Object.entries(errors).map(([name,message])=>'Calculation '+name+' could not finish: '+message).join(' ');
+    $('app-error').hidden=Object.keys(errors).length===0;
   }
   function prepareDownload(group,kind) {
     const r=records[group]; if(!r)return;
@@ -263,7 +276,7 @@
         s+=line(x,361,x+25,361,'stroke="'+curve.color+'" stroke-width="2"'+(curve.dash?' stroke-dasharray="5 3"':''));
         s+=text(x+31,366,label);
       });
-      if(group==='eta')s+='<circle cx="477" cy="361" r="2.5"/>'+text(489,366,'Integration samples');
+      if(group==='eta' && r.curves.length)s+='<circle cx="477" cy="361" r="2.5"/>'+text(489,366,'Integration samples');
       s+=text(34,397,captions[group]);
       s+=text(34,422,'One spin species. Copyright (c) 2026 Neil Yuanting Li. MIT License.');
       footer.innerHTML=s;clone.append(footer);

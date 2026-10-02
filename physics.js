@@ -236,6 +236,40 @@
     const p = levelParameters(input);
     const sideEnergy = input.sideEnergy === undefined ? 0 : finite(input.sideEnergy, "sideEnergy");
     const coupling = input.coupling === undefined ? 0.5 : nonnegative(input.coupling, "coupling");
+    if (p.gamma === 0 && p.eta === 0) {
+      // Neither orbital has any continuous spectral weight in an isolated
+      // Hermitian device. Each eigenstate contributes 2 pi delta(E-E_j) to
+      // Tr A. siteWeights specify its normalized [central, side] weights.
+      const midpoint = (p.epsilon + sideEnergy) / 2;
+      const halfDifference = (p.epsilon - sideEnergy) / 2;
+      const splitting = Math.hypot(halfDifference, coupling);
+      const lowerCentralWeight = splitting === 0 ? 1 : (1 - halfDifference / splitting) / 2;
+      const boundStates = [
+        {energy: midpoint - splitting, weight: 1, siteWeights: [lowerCentralWeight, 1 - lowerCentralWeight]},
+        {energy: midpoint + splitting, weight: 1, siteWeights: [1 - lowerCentralWeight, lowerCentralWeight]}
+      ];
+      // At exact degeneracy the chosen bound-state basis is the two original
+      // orbitals. Only the summed spectral projector is basis independent.
+      const atBoundPole = boundStates.some(function (state) { return E === state.energy; });
+      const G = atBoundPole ? null : inverse([
+        [[E - p.epsilon, 0], [coupling, 0]],
+        [[coupling, 0], [E - sideEnergy, 0]]
+      ]);
+      if (!G) {
+        // As for chain poles, null denotes distributional spectral data.
+        // Disconnected reservoirs still scatter only by reflection.
+        return {G: null, T: 0, R: 1, Rright: 1, absorption: 0, absorptionRight: 0,
+          A: null, AL: 0, AR: 0, Aeta: 0, spectral: [null, null],
+          partialL: [0, 0], partialR: [0, 0], partialEta: [0, 0],
+          gammaL: 0, gammaR: 0, gammaEta: 0, channels: 1, sites: 2,
+          singular: true, spectralResidual: null, fluxResidual: 0,
+          boundStates: boundStates, spectralIncludesBoundStates: false};
+      }
+      const result = transportFromGreen(G, 0, 0, 0, 0, 0, 1);
+      result.boundStates = boundStates;
+      result.spectralIncludesBoundStates = false;
+      return result;
+    }
     if (coupling === 0) {
       const central = evaluateLevel(E, p);
       const atBoundPole = p.eta === 0 && E === sideEnergy;

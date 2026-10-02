@@ -8,6 +8,9 @@ adjustable SVG figures.
 
 ## Open the notes
 
+**[Read online](https://n-y-l.github.io/quantum-transport-notes/)** ·
+[Source repository](https://github.com/N-Y-L/quantum-transport-notes)
+
 **Double-click `index.html`.** No installation, server, account, build step, or
 internet connection is needed for the calculations. External references need a
 connection. Equations use the bundled KaTeX distribution.
@@ -23,9 +26,10 @@ connection. Equations use the bundled KaTeX distribution.
 Read the [connected derivation](docs/notes.html) for the retarded resolvent,
 lead elimination, Γ, the Caroli trace, occupations, and lifetime conventions.
 [Annotated references](docs/references.html) identify primary papers and Datta's
-teaching. Each experiment has reset and example buttons. “Save figure” exports
+teaching. Each experiment has a prediction question, an expandable explanation, reset and example buttons. “Save figure” exports
 the plotted SVG; “Save calculation” exports model parameters, units, results,
-and curve samples as JSON. A persistent download link permits another attempt.
+and curve samples as JSON. A persistent download link permits another attempt; changing parameters clears
+the previous snapshot.
 The export source is also available in an expandable text panel for inspection or copying.
 These exports are records, not importable sessions.
 
@@ -96,9 +100,9 @@ grid-dependent Fermi-step errors. The bias interface compares two grid
 spacings. The η lab intentionally permits unresolved integrals and reports
 their errors instead of clipping the answers.
 
-Plot samples and integration samples serve different purposes. The chain
-curve resolves resonances with adaptive sampling; the Fano curve adds samples
-on the antiresonance width scale. The η curve resolves the analytic peak for
+Plot samples and integration samples serve different purposes. Both chain and Fano
+curves use adaptive sampling around exact resonance and antiresonance energies.
+Zero-temperature Fermi curves display sharp steps. The η curve resolves the analytic peak for
 display while its dots and table expose the actual uniform integration grid.
 The finite-η sink-current readout uses exact zero-temperature integrals over
 the infinite energy axis, separately from that intentionally fallible grid.

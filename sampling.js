@@ -83,6 +83,43 @@
     return result;
   }
 
+  // Extrema are supplied by each model before refinement. Midpoint checks
+  // alone can otherwise miss a narrow feature between two almost equal tails.
+  function adaptiveCurve(energies, value) {
+    const cache = new Map();
+    function at(E) {
+      if (!cache.has(E)) cache.set(E, value(E));
+      return cache.get(E);
+    }
+    const curve = [[energies[0], at(energies[0])]];
+    const tolerance = 0.0005;
+    function refine(a, ta, b, tb, depth) {
+      const middle = (a + b) / 2;
+      const quarter = (a + middle) / 2, threeQuarter = (middle + b) / 2;
+      const tq = at(quarter), tm = at(middle), tt = at(threeQuarter);
+      let error = Math.max(Math.abs(tq - (3 * ta + tb) / 4),
+        Math.abs(tm - (ta + tb) / 2), Math.abs(tt - (ta + 3 * tb) / 4));
+      // A Fano flank can change curvature sharply near an endpoint even when
+      // the quarter points almost follow a straight line. Check the intervening
+      // eighth points before accepting a segment.
+      if (error <= tolerance) {
+        for (const fraction of [0.125, 0.375, 0.625, 0.875]) {
+          error = Math.max(error, Math.abs(at(a + (b - a) * fraction) - (ta + (tb - ta) * fraction)));
+        }
+      }
+      if (error <= tolerance || depth >= 40 || b - a < 1e-13) {
+        curve.push([b, tb]);
+      } else {
+        refine(a, ta, middle, tm, depth + 1);
+        refine(middle, tm, b, tb, depth + 1);
+      }
+    }
+    for (let i = 1; i < energies.length; i++) {
+      refine(energies[i - 1], at(energies[i - 1]), energies[i], at(energies[i]), 0);
+    }
+    return curve;
+  }
+
   function chainCurve(parameters) {
     const input = parameters || {};
     const p = Object.assign({sites: 5, hopping: 1, contact: 1, onsite: 0, eta: 0,
@@ -121,34 +158,33 @@
     }
     if (Number.isFinite(p.probe) && p.probe > lower && p.probe < upper) seeds.push(p.probe);
     const energies = sortedUnique(seeds.filter(function (E) { return E >= lower && E <= upper; }), 1e-14);
-    const cache = new Map();
-    function transmission(E) {
-      if (!cache.has(E)) cache.set(E, P.chain(E, p).T);
-      return cache.get(E);
-    }
-    const inside = [[energies[0], transmission(energies[0])]];
-    const tolerance = 0.0005;
-    function refine(a, ta, b, tb, depth) {
-      const middle = (a + b) / 2;
-      const quarter = (a + middle) / 2, threeQuarter = (middle + b) / 2;
-      const tq = transmission(quarter), tm = transmission(middle), tt = transmission(threeQuarter);
-      const error = Math.max(Math.abs(tq - (3 * ta + tb) / 4),
-        Math.abs(tm - (ta + tb) / 2), Math.abs(tt - (ta + 3 * tb) / 4));
-      if (error <= tolerance || depth >= 40 || b - a < 1e-13) {
-        inside.push([b, tb]);
-      } else {
-        refine(a, ta, middle, tm, depth + 1);
-        refine(middle, tm, b, tb, depth + 1);
-      }
-    }
-    for (let i = 1; i < energies.length; i++) {
-      refine(energies[i - 1], transmission(energies[i - 1]), energies[i], transmission(energies[i]), 0);
-    }
+    const inside = adaptiveCurve(energies, function (E) { return P.chain(E, p).T; });
     // Null entries break the SVG path. At E=+/-2 the channel count is zero;
     // the one-sided transmission limit need not equal that endpoint value.
     return [[-2.4, 0], [-2, P.chain(-2, p).T], [-2, null]].concat(inside,
       [[2, null], [2, P.chain(2, p).T], [2.4, 0]]);
   }
 
-  return Object.freeze({chainCurve: chainCurve});
+  function fanoCurve(parameters) {
+    const p = Object.assign({epsilon: 0, gammaL: 0.5, gammaR: 0.5, eta: 0,
+      sideEnergy: 0, coupling: 0.5}, parameters || {});
+    if (p.epsilon !== 0 || p.gammaL !== 0.5 || p.gammaR !== 0.5 || p.eta !== 0 ||
+        !Number.isFinite(p.sideEnergy) || Math.abs(p.sideEnergy) > 1.5 ||
+        !Number.isFinite(p.coupling) || p.coupling < 0 || p.coupling > 1) {
+      throw new RangeError("fanoCurve requires epsilon=0, gammaL=gammaR=0.5, eta=0, |sideEnergy|<=1.5, and coupling=0..1");
+    }
+    const seeds = Array.from({length: 97}, function (_, i) { return -3 + 6 * i / 96; });
+    if (p.coupling > 0) {
+      // With eta=0, T has its zero at epsilon_s and maxima at the two
+      // isolated-device eigenenergies E(E-epsilon_s)-v^2=0. Seeding all three
+      // features resolves both the narrow notch and its displaced resonance.
+      const splitting = Math.hypot(p.sideEnergy / 2, p.coupling);
+      seeds.push(p.sideEnergy, p.sideEnergy / 2 - splitting, p.sideEnergy / 2 + splitting);
+    } else seeds.push(0);
+    if (Number.isFinite(p.probe) && Math.abs(p.probe) <= 3) seeds.push(p.probe);
+    const energies = sortedUnique(seeds, 1e-14);
+    return adaptiveCurve(energies, function (E) { return P.fano(E, p).T; });
+  }
+
+  return Object.freeze({chainCurve: chainCurve, fanoCurve: fanoCurve});
 });

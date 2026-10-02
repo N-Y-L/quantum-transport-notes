@@ -17,6 +17,8 @@
   "independentReferences": {
     "scattering": "Outgoing-wave recurrence of the discrete Schrodinger equation, resolved into incident and reflected lead waves.",
     "integration": "Closed-form arctangent integrals of a Lorentzian, with the same finite energy window as the numerical integral.",
+    "finiteTemperature": "Adaptive Simpson integration of analytic Lorentzian and tanh Fermi functions; integral tolerance 2e-12 per scalar integrand.",
+    "fano": "T(E) = 0.25 (E-epsilon_s)^2 / ([E(E-epsilon_s)-v^2]^2 + 0.25(E-epsilon_s)^2); v=0 uses the central Lorentzian directly.",
     "currentMicroampPerEV": 38.7404586493
   },
   "matchedChain": {
@@ -170,6 +172,104 @@
       "currentErrorMicroamp": -0.00000181241376573,
       "occupationError": 7.91674986678e-9,
       "conservationResidualMicroamp": -8.881784197e-16
+    }
+  ],
+  "finiteTemperatureBias": [
+    {
+      "parameters": {
+        "epsilon": 0.05,
+        "bias": 0.1,
+        "kT": 0.005,
+        "gammaL": 0.02,
+        "gammaR": 0.38,
+        "eta": 0,
+        "limit": 40,
+        "intervals": 32000
+      },
+      "numerical": {
+        "I": 0.681588370736,
+        "n": 0.358404159977,
+        "spectralArea": 0.996816922688
+      },
+      "reference": {
+        "I": 0.681588370725,
+        "n": 0.358404159978,
+        "spectralArea": 0.99681692269
+      },
+      "currentErrorMicroamp": 1.12411191466e-11,
+      "occupationError": -1.03744790536e-12
+    },
+    {
+      "parameters": {
+        "epsilon": -2,
+        "bias": -4,
+        "kT": 0.005,
+        "gammaL": 0.38,
+        "gammaR": 0.02,
+        "eta": 0,
+        "limit": 40,
+        "intervals": 32000
+      },
+      "numerical": {
+        "I": -2.23888206483,
+        "n": 0.522529583644,
+        "spectralArea": 0.99680895037
+      },
+      "reference": {
+        "I": -2.23888206479,
+        "n": 0.522529583645,
+        "spectralArea": 0.996808950373
+      },
+      "currentErrorMicroamp": -3.8925751511e-11,
+      "occupationError": -1.2084777623e-12
+    },
+    {
+      "parameters": {
+        "epsilon": 0.35,
+        "bias": 0.7,
+        "kT": 0.2,
+        "gammaL": 0.12,
+        "gammaR": 0.28,
+        "eta": 0,
+        "limit": 40,
+        "intervals": 32000
+      },
+      "numerical": {
+        "I": 7.66974367322,
+        "n": 0.235846299428,
+        "spectralArea": 0.996816683949
+      },
+      "reference": {
+        "I": 7.66974367308,
+        "n": 0.235846299429,
+        "spectralArea": 0.996816683951
+      },
+      "currentErrorMicroamp": 1.34917854666e-10,
+      "occupationError": -1.01071928604e-12
+    },
+    {
+      "parameters": {
+        "epsilon": 0,
+        "bias": 0,
+        "kT": 0.005,
+        "gammaL": 0.2,
+        "gammaR": 0.2,
+        "eta": 0,
+        "limit": 40,
+        "intervals": 32000
+      },
+      "numerical": {
+        "I": 0,
+        "n": 0.498408463831,
+        "spectralArea": 0.996816927662
+      },
+      "reference": {
+        "I": 0,
+        "n": 0.498408463832,
+        "spectralArea": 0.996816927664
+      },
+      "currentErrorMicroamp": 0,
+      "occupationError": -1.04449782157e-12
     }
   ],
   "etaConvergence": {
@@ -589,6 +689,203 @@
             "halfMaximumWidth": 0.22789211889,
             "plottedPeak": 0.999999985059,
             "maximumLocalInterpolationError": 0.000313870493858
+          }
+        ]
+      }
+    ]
+  },
+  "fanoPlotSampling": {
+    "interpolation": "Piecewise linear between samples, with seeds at the exact zero and both unit-transmission energies when v>0.",
+    "reference": "Independent rational transmission formula on a dense uniform mesh and six interior points per rendered segment. Reported maxima are sampled errors, not uniform mathematical bounds.",
+    "rows": [
+      {
+        "parameters": {
+          "sideEnergy": 1.25,
+          "coupling": 0.025
+        },
+        "plotSamples": 257,
+        "referenceScan": {
+          "lower": -3,
+          "upper": 3,
+          "intervals": 60000,
+          "step": 0.0001
+        },
+        "sampledMaximumInterpolationError": 0.000483007808169,
+        "worstEnergy": 1.25204980516,
+        "atSideEnergy": 3.08148791102e-33,
+        "peaks": [
+          {
+            "energy": -0.00049980015984,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          },
+          {
+            "energy": 1.25049980016,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          }
+        ]
+      },
+      {
+        "parameters": {
+          "sideEnergy": -1.5,
+          "coupling": 0.025
+        },
+        "plotSamples": 259,
+        "referenceScan": {
+          "lower": -3,
+          "upper": 3,
+          "intervals": 60000,
+          "step": 0.0001
+        },
+        "sampledMaximumInterpolationError": 0.000496505335089,
+        "worstEnergy": -1.4994,
+        "atSideEnergy": 7.70371977755e-34,
+        "peaks": [
+          {
+            "energy": -1.50041655099,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          },
+          {
+            "energy": 0.000416550990182,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          }
+        ]
+      },
+      {
+        "parameters": {
+          "sideEnergy": 0,
+          "coupling": 0.025
+        },
+        "plotSamples": 235,
+        "referenceScan": {
+          "lower": -3,
+          "upper": 3,
+          "intervals": 60000,
+          "step": 0.0001
+        },
+        "sampledMaximumInterpolationError": 0.000474702242306,
+        "worstEnergy": -0.0041,
+        "atSideEnergy": 1.23259516441e-32,
+        "peaks": [
+          {
+            "energy": -0.025,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          },
+          {
+            "energy": 0.025,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          }
+        ]
+      },
+      {
+        "parameters": {
+          "sideEnergy": -0.1,
+          "coupling": 0.05
+        },
+        "plotSamples": 228,
+        "referenceScan": {
+          "lower": -3,
+          "upper": 3,
+          "intervals": 60000,
+          "step": 0.0001
+        },
+        "sampledMaximumInterpolationError": 0.000498344096644,
+        "worstEnergy": 0.052,
+        "atSideEnergy": 0,
+        "peaks": [
+          {
+            "energy": -0.120710678119,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          },
+          {
+            "energy": 0.0207106781187,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          }
+        ]
+      },
+      {
+        "parameters": {
+          "sideEnergy": 0.7,
+          "coupling": 0.35
+        },
+        "plotSamples": 213,
+        "referenceScan": {
+          "lower": -3,
+          "upper": 3,
+          "intervals": 60000,
+          "step": 0.0001
+        },
+        "sampledMaximumInterpolationError": 0.000495446999325,
+        "worstEnergy": 0.7832,
+        "atSideEnergy": 1.23259516441e-32,
+        "peaks": [
+          {
+            "energy": -0.144974746831,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          },
+          {
+            "energy": 0.844974746831,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          }
+        ]
+      },
+      {
+        "parameters": {
+          "sideEnergy": 0,
+          "coupling": 1
+        },
+        "plotSamples": 213,
+        "referenceScan": {
+          "lower": -3,
+          "upper": 3,
+          "intervals": 60000,
+          "step": 0.0001
+        },
+        "sampledMaximumInterpolationError": 0.000491231529411,
+        "worstEnergy": 1.0701,
+        "atSideEnergy": 0,
+        "peaks": [
+          {
+            "energy": -1,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          },
+          {
+            "energy": 1,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
+          }
+        ]
+      },
+      {
+        "parameters": {
+          "sideEnergy": 1.5,
+          "coupling": 0
+        },
+        "plotSamples": 133,
+        "referenceScan": {
+          "lower": -3,
+          "upper": 3,
+          "intervals": 60000,
+          "step": 0.0001
+        },
+        "sampledMaximumInterpolationError": 0.000451273076473,
+        "worstEnergy": -0.1715,
+        "atSideEnergy": 0.1,
+        "peaks": [
+          {
+            "energy": 0,
+            "exactTransmission": 1,
+            "plottedTransmission": 1
           }
         ]
       }

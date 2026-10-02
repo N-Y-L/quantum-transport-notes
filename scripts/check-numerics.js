@@ -52,18 +52,19 @@ function lorentzianArea(epsilon, width, lower, upper) {
 }
 
 /** Exact zero-temperature, finite-window WBL results, including an empty
- * absorbing channel of width 2η when η>0. Both physical μ lie in the window.
+ * absorbing channel of width 2η when η>0. Occupied ranges are clipped to the
+ * actual (possibly shifted) integration window, not necessarily to either μ.
  */
 function zeroTemperatureReference(p) {
   const gamma = p.gammaL + p.gammaR;
   const width = gamma + 2 * (p.eta || 0);
   const a = width / 2;
-  const lower = -p.limit;
-  const upper = p.limit;
-  const muL = p.bias / 2;
-  const muR = -p.bias / 2;
-  if (!(a > 0 && muL > lower && muL < upper && muR > lower && muR < upper)) {
-    throw new RangeError('Reference requires positive width and chemical potentials inside the integration window.');
+  const lower = -p.limit + (p.offset || 0);
+  const upper = p.limit + (p.offset || 0);
+  const muL = Math.max(lower, Math.min(upper, p.bias / 2));
+  const muR = Math.max(lower, Math.min(upper, -p.bias / 2));
+  if (!(a > 0 && upper > lower)) {
+    throw new RangeError('Reference requires positive spectral width and integration-window width.');
   }
   const primitive = x => Math.atan((x - p.epsilon) / a) / a;
   const filledL = primitive(muL) - primitive(lower);
@@ -82,6 +83,50 @@ function zeroTemperatureReference(p) {
 }
 
 function maximum(values) { return Math.max(...values.map(Math.abs)); }
+
+// Independent quadrature for the finite-temperature interface checks. Its
+// adaptive Simpson rule and analytic Lorentzian integrands share neither the
+// Green-function evaluations nor the uniform trapezoid grid of physics.js.
+function adaptiveSimpson(fn, lower, upper, tolerance) {
+  function refine(a, fa, m, fm, b, fb, whole, budget, depth) {
+    const lm = (a + m) / 2, rm = (m + b) / 2;
+    const flm = fn(lm), frm = fn(rm);
+    const left = (m - a) * (fa + 4 * flm + fm) / 6;
+    const right = (b - m) * (fm + 4 * frm + fb) / 6;
+    const correction = left + right - whole;
+    if (Math.abs(correction) <= 15 * budget) return left + right + correction / 15;
+    if (depth === 0) throw new RangeError('Independent Simpson reference did not converge.');
+    return refine(a, fa, lm, flm, m, fm, left, budget / 2, depth - 1)
+      + refine(m, fm, rm, frm, b, fb, right, budget / 2, depth - 1);
+  }
+  const middle = (lower + upper) / 2;
+  const a = fn(lower), m = fn(middle), b = fn(upper);
+  return refine(lower, a, middle, m, upper, b, (upper - lower) * (a + 4 * m + b) / 6, tolerance, 24);
+}
+
+function finiteTemperatureReference(p) {
+  if (!(p.kT > 0)) throw new RangeError('Finite-temperature reference requires kT > 0.');
+  const lower = -p.limit + (p.offset || 0), upper = p.limit + (p.offset || 0);
+  const halfWidth = (p.gammaL + p.gammaR) / 2 + (p.eta || 0);
+  const muL = p.bias / 2, muR = -p.bias / 2;
+  const anchors = [lower, upper, p.epsilon - halfWidth, p.epsilon, p.epsilon + halfWidth];
+  for (const mu of [muL, muR]) {
+    for (const offset of [-8, -2, 0, 2, 8]) anchors.push(mu + offset * p.kT);
+  }
+  const nodes = [...new Set(anchors.filter(E => E >= lower && E <= upper))].sort((a, b) => a - b);
+  const f = (E, mu) => (1 - Math.tanh((E - mu) / (2 * p.kT))) / 2;
+  function integral(fn) {
+    let result = 0;
+    for (let i = 1; i < nodes.length; i++) result += adaptiveSimpson(fn, nodes[i - 1], nodes[i], 2e-12 / nodes.length);
+    return result;
+  }
+  const denominator = E => (E - p.epsilon) ** 2 + halfWidth ** 2;
+  return {
+    I: currentMicroampPerEV * integral(E => p.gammaL * p.gammaR * (f(E, muL) - f(E, muR)) / denominator(E)),
+    n: integral(E => (p.gammaL * f(E, muL) + p.gammaR * f(E, muR)) / denominator(E)) / (2 * Math.PI),
+    spectralArea: lorentzianArea(p.epsilon, 2 * halfWidth, lower, upper)
+  };
+}
 
 function interpolateCurve(curve, E) {
   let left = 0, right = curve.length - 1;
@@ -160,6 +205,36 @@ function checkChainCurve(curve, parameters, intervals = 80000) {
   });
   return { parameters, plotSamples: curve.length, referenceScan: { lower, upper, intervals, step, localPeakStep: 2 * step / 800 },
     sampledMaximumInterpolationError: maxError, worstEnergy, maximumLibraryReferenceDifference: maxLibraryDifference, peaks };
+}
+
+function fanoReference(E, { sideEnergy, coupling }) {
+  if (coupling === 0) return 0.25 / (E * E + 0.25);
+  const detuning = E - sideEnergy;
+  return 0.25 * detuning ** 2 / ((E * detuning - coupling ** 2) ** 2 + 0.25 * detuning ** 2);
+}
+
+function checkFanoCurve(curve, parameters, intervals = 60000) {
+  const lower = -3, upper = 3, step = (upper - lower) / intervals;
+  let maxError = 0, worstEnergy = lower;
+  function check(E) {
+    const error = Math.abs(interpolateCurve(curve, E) - fanoReference(E, parameters));
+    if (error > maxError) { maxError = error; worstEnergy = E; }
+  }
+  for (let i = 0; i <= intervals; i++) check(lower + i * step);
+  // Also inspect each rendered segment. A uniform reference grid alone can
+  // skip narrow peaks and flanks at the minimum allowed nonzero coupling.
+  for (let i = 1; i < curve.length; i++) {
+    for (const fraction of [0.1, 0.2, 0.4, 0.6, 0.8, 0.9]) {
+      check(curve[i - 1][0] + fraction * (curve[i][0] - curve[i - 1][0]));
+    }
+  }
+  const { sideEnergy, coupling } = parameters;
+  const split = Math.hypot(sideEnergy / 2, coupling);
+  const peakEnergies = coupling === 0 ? [0] : [sideEnergy / 2 - split, sideEnergy / 2 + split];
+  return { parameters, plotSamples: curve.length, referenceScan: { lower, upper, intervals, step },
+    sampledMaximumInterpolationError: maxError, worstEnergy,
+    atSideEnergy: interpolateCurve(curve, sideEnergy),
+    peaks: peakEnergies.map(energy => ({ energy, exactTransmission: fanoReference(energy, parameters), plottedTransmission: interpolateCurve(curve, energy) })) };
 }
 
 function rounded(value) { return Number(value.toPrecision(12)); }
@@ -241,18 +316,44 @@ function buildReport() {
     { sites: 9, hopping: 1.4, contact: 1.4, onsite: -1.5 }
   ].map(parameters => checkChainCurve(S.chainCurve(parameters), parameters));
 
+  const fanoPlotSampling = [
+    { sideEnergy: 1.25, coupling: 0.025 },
+    { sideEnergy: -1.5, coupling: 0.025 },
+    { sideEnergy: 0, coupling: 0.025 },
+    { sideEnergy: -0.1, coupling: 0.05 },
+    { sideEnergy: 0.7, coupling: 0.35 },
+    { sideEnergy: 0, coupling: 1 },
+    { sideEnergy: 1.5, coupling: 0 }
+  ].map(parameters => checkFanoCurve(S.fanoCurve(parameters), parameters));
+
+  const finiteTemperatureBias = [
+    { epsilon: 0.05, bias: 0.1, kT: 0.005, fraction: 0.05 },
+    { epsilon: -2, bias: -4, kT: 0.005, fraction: 0.95 },
+    { epsilon: 0.35, bias: 0.7, kT: 0.2, fraction: 0.3 },
+    { epsilon: 0, bias: 0, kT: 0.005, fraction: 0.5 }
+  ].map(settings => {
+    const { epsilon, bias, kT, fraction } = settings;
+    const parameters = { epsilon, bias, kT, gammaL: 0.4 * fraction, gammaR: 0.4 * (1 - fraction), eta: 0, limit: 40, intervals: 32000 };
+    const numerical = P.bias(parameters);
+    const reference = finiteTemperatureReference(parameters);
+    return { parameters, numerical: { I: numerical.I, n: numerical.n, spectralArea: numerical.spectralArea }, reference,
+      currentErrorMicroamp: numerical.I - reference.I, occupationError: numerical.n - reference.n };
+  });
+
   return roundTree({
     formatVersion: 1,
     runtime: { node: process.version },
     conventions: { energies: 'eV', currents: 'microampere per spin', lifetime: 'femtosecond; single wide-band pole, one-electron probability survival time ℏ/(Γ+2η); maintained occupation determined separately', hopping: 'H[n,n+1] = -t', bias: 'muL = bias/2; muR = -bias/2', current: 'IL and IR enter device; Isink leaves device', eta: 'Finite eta is implemented as an empty absorbing channel of width 2 eta for current balance.', integration: 'Composite trapezoid. Zero-temperature bias integration inserts exact chemical-potential breakpoints and uses one-sided occupations on each segment. Spectral-grid diagnostics retain the specified uniform grid.', randomness: 'none' },
-    independentReferences: { scattering: 'Outgoing-wave recurrence of the discrete Schrodinger equation, resolved into incident and reflected lead waves.', integration: 'Closed-form arctangent integrals of a Lorentzian, with the same finite energy window as the numerical integral.', currentMicroampPerEV },
+    independentReferences: { scattering: 'Outgoing-wave recurrence of the discrete Schrodinger equation, resolved into incident and reflected lead waves.', integration: 'Closed-form arctangent integrals of a Lorentzian, with the same finite energy window as the numerical integral.', finiteTemperature: 'Adaptive Simpson integration of analytic Lorentzian and tanh Fermi functions; integral tolerance 2e-12 per scalar integrand.', fano: 'T(E) = 0.25 (E-epsilon_s)^2 / ([E(E-epsilon_s)-v^2]^2 + 0.25(E-epsilon_s)^2); v=0 uses the central Lorentzian directly.', currentMicroampPerEV },
     matchedChain: { energies: openEnergies, hopping: 1, contact: 1, onsite: 0, eta: 0, rows: matched },
     mismatchedChain: { energies: openEnergies, eta: 0, rows: mismatch },
     zeroTemperatureBias: bias,
+    finiteTemperatureBias,
     etaConvergence: { epsilon: 0.13, gammaL: 0.2, gammaR: 0.2, evaluationEnergy: 0.13, rows: etaConvergence },
     spectralGrid: { epsilon: 0, gammaL: 0, gammaR: 0, interpretation: 'Compare sampled area with exact finite-window area, not with one alone. Grid error and omitted tails are distinct.', rows: spectralGrid },
     spectralWindow: { epsilon: 0.07, gammaL: 0.1, gammaR: 0.1, eta: 0.03, gridStep: 0.002, rows: spectralWindow },
-    chainPlotSampling: { interpolation: 'Piecewise linear between samples; do not cross band-edge path breaks.', reference: 'Independent outgoing-wave recurrence on a dense uniform mesh, with separately refined local maxima and half-height flanks.', rows: chainPlotSampling }
+    chainPlotSampling: { interpolation: 'Piecewise linear between samples; do not cross band-edge path breaks.', reference: 'Independent outgoing-wave recurrence on a dense uniform mesh, with separately refined local maxima and half-height flanks.', rows: chainPlotSampling },
+    fanoPlotSampling: { interpolation: 'Piecewise linear between samples, with seeds at the exact zero and both unit-transmission energies when v>0.', reference: 'Independent rational transmission formula on a dense uniform mesh and six interior points per rendered segment. Reported maxima are sampled errors, not uniform mathematical bounds.', rows: fanoPlotSampling }
   });
 }
 
@@ -266,6 +367,8 @@ if (require.main === module) {
   console.table(report.mismatchedChain.rows.map(row => ({ sites: row.parameters.sites, maximumTransmissionError: row.maximumTransmissionError, maximumReflectionError: row.maximumReflectionError })));
   console.log('Zero-temperature finite-window bias integrals');
   console.table(report.zeroTemperatureBias.map(row => ({ eta: row.parameters.eta, currentMicroamp: row.numerical.I, currentErrorMicroamp: row.currentErrorMicroamp, occupation: row.numerical.n, occupationError: row.occupationError, conservationResidualMicroamp: row.conservationResidualMicroamp })));
+  console.log('Finite-temperature bias versus independent adaptive Simpson integration');
+  console.table(report.finiteTemperatureBias.map(row => ({ epsilon: row.parameters.epsilon, bias: row.parameters.bias, kT: row.parameters.kT, currentErrorMicroamp: row.currentErrorMicroamp, occupationError: row.occupationError })));
   console.log('Finite-eta convergence on an open resonance, Gamma_L = Gamma_R = 0.2 eV');
   console.table(report.etaConvergence.rows.map(row => ({ eta: row.eta, T: row.T, R: row.R, loss: row.loss, spectralWeightMissingWithoutEta: row.missingSpectralFunctionWithoutEtaTerm })));
   console.log('Spectral grid convergence for an isolated level, eta = 0.003 eV');
@@ -274,6 +377,8 @@ if (require.main === module) {
   console.table(report.spectralWindow.rows);
   console.log('Chain plot versus independent dense wave-matching scans');
   console.table(report.chainPlotSampling.rows.map(row => ({ hopping: row.parameters.hopping, contact: row.parameters.contact, onsite: row.parameters.onsite, plotSamples: row.plotSamples, resolvedPeaks: row.peaks.length, sampledMaximumError: row.sampledMaximumInterpolationError, libraryReferenceDifference: row.maximumLibraryReferenceDifference })));
+  console.log('Fano plot versus independent rational transmission formula');
+  console.table(report.fanoPlotSampling.rows.map(row => ({ sideEnergy: row.parameters.sideEnergy, coupling: row.parameters.coupling, plotSamples: row.plotSamples, sampledMaximumError: row.sampledMaximumInterpolationError })));
   if (process.argv.includes('--write')) {
     const destination = path.join(__dirname, '..', 'docs', 'numerical-checks.json');
     fs.mkdirSync(path.dirname(destination), { recursive: true });
@@ -282,4 +387,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { scatteringReference, lorentzianArea, zeroTemperatureReference, currentMicroampPerEV, interpolateCurve, checkChainCurve, buildReport };
+module.exports = { scatteringReference, lorentzianArea, zeroTemperatureReference, finiteTemperatureReference, currentMicroampPerEV, interpolateCurve, checkChainCurve, checkFanoCurve, buildReport };

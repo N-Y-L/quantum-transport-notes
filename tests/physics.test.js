@@ -4,7 +4,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const P = require('../physics.js');
-const { scatteringReference, lorentzianArea, zeroTemperatureReference, currentMicroampPerEV, checkChainCurve, interpolateCurve } = require('../scripts/check-numerics.js');
+const { scatteringReference, lorentzianArea, zeroTemperatureReference, finiteTemperatureReference, currentMicroampPerEV, checkChainCurve, checkFanoCurve, interpolateCurve } = require('../scripts/check-numerics.js');
 
 function close(actual, expected, tolerance = 1e-11, message = '') {
   assert.ok(Number.isFinite(actual), `${message}: nonfinite result ${actual}`);
@@ -221,6 +221,55 @@ test('Fano spectral and flux identities include eta on both orbitals', () => {
   }
 });
 
+test('fully isolated Fano orbitals report both delta-function states and distributional poles', () => {
+  // H=[[0.3,-0.4],[-0.4,-0.3]] has eigenvalues ±0.5 and normalized
+  // eigenvectors (1,2)/sqrt(5), (2,-1)/sqrt(5), respectively.
+  const cases = [
+    { epsilon: 0.3, sideEnergy: -0.3, coupling: 0.4, energies: [-0.5, 0.5], weights: [[0.2, 0.8], [0.8, 0.2]] },
+    { epsilon: 0, sideEnergy: 0, coupling: 0.5, energies: [-0.5, 0.5], weights: [[0.5, 0.5], [0.5, 0.5]] },
+    { epsilon: 0.3, sideEnergy: -0.3, coupling: 0, energies: [-0.3, 0.3], weights: [[0, 1], [1, 0]] },
+    { epsilon: 0.3, sideEnergy: 0.3, coupling: 0, energies: [0.3, 0.3], weights: [[1, 0], [0, 1]] }
+  ];
+  for (const example of cases) {
+    const p = { epsilon: example.epsilon, sideEnergy: example.sideEnergy, coupling: example.coupling, gammaL: 0, gammaR: 0, eta: 0 };
+    const q = P.fano(0.1, p);
+    close(q.A, 0, 0, 'regular spectrum away from the isolated poles');
+    assert.equal(q.spectralIncludesBoundStates, false);
+    assert.equal(q.boundStates.length, 2);
+    for (let i = 0; i < 2; i++) {
+      const state = q.boundStates[i];
+      close(state.energy, example.energies[i]);
+      close(state.weight, 1);
+      for (let site = 0; site < 2; site++) close(state.siteWeights[site], example.weights[i][site]);
+      const pole = P.fano(state.energy, p);
+      assert.equal(pole.singular, true);
+      assert.equal(pole.G, null);
+      assert.equal(pole.A, null, 'a delta-function pole has no ordinary finite spectral value');
+      assert.equal(pole.spectralIncludesBoundStates, false);
+      close(pole.T, 0);
+      close(pole.R, 1);
+      close(pole.absorption, 0);
+    }
+    for (let site = 0; site < 2; site++) {
+      close(q.boundStates.reduce((total, state) => total + state.siteWeights[site], 0), 1, 1e-12, 'one integrated state per orbital');
+    }
+  }
+});
+
+test('broadening an isolated Fano device recovers its eigenstate spectral projectors', () => {
+  const p = { epsilon: 0.3, sideEnergy: -0.3, coupling: 0.4, gammaL: 0, gammaR: 0, eta: 0.02 };
+  for (const E of [-1, -0.5, 0, 0.5, 1]) {
+    const lower = 2 * p.eta / ((E + 0.5) ** 2 + p.eta ** 2);
+    const upper = 2 * p.eta / ((E - 0.5) ** 2 + p.eta ** 2);
+    const q = P.fano(E, p);
+    close(q.spectral[0], 0.2 * lower + 0.8 * upper, 2e-10);
+    close(q.spectral[1], 0.8 * lower + 0.2 * upper, 2e-10);
+    close(q.A, lower + upper, 2e-10);
+    assert.equal(q.spectralIncludesBoundStates, true);
+    assert.deepEqual(q.boundStates, []);
+  }
+});
+
 test('coupled two-orbital spectral trace has two units of total weight, with exact finite-window tails', () => {
   // For equal onsite energies and v>Gamma/4, the two effective-Hamiltonian
   // poles are ±sqrt(v²−Gamma²/16)−i(Gamma/4+eta). Tr G has residue one
@@ -278,6 +327,33 @@ test('finite-temperature currents conserve flux only after the modeled sink is i
       assert.ok(Math.abs(q.IL + q.IR) > 1);
     }
   }
+});
+
+test('zero-temperature step integration handles shifted windows, endpoint steps, and steps outside the window', () => {
+  for (const bias of [-2.2, -1.9, -0.5, 0, 0.5, 1.9, 2.2]) {
+    const p = { epsilon: 0.137, gammaL: 0.18, gammaR: 0.32, eta: 0.03, bias, kT: 0, limit: 0.6, offset: 0.35, intervals: 10000 };
+    const q = P.bias(p), exact = zeroTemperatureReference(p);
+    close(q.I, exact.I, 1e-6, `current, bias=${bias}`);
+    close(q.n, exact.n, 2e-8, `occupation, bias=${bias}`);
+    close(q.spectralArea, exact.spectralArea, 2e-8);
+    assert.ok(q.actualIntervals >= p.intervals && q.actualIntervals <= p.intervals + 2);
+  }
+});
+
+test('finite-temperature interface grids agree with independent adaptive Simpson reference', () => {
+  for (const [epsilon, bias, kT, fraction] of [[0.05, 0.1, 0.005, 0.05], [-2, -4, 0.005, 0.95], [0.35, 0.7, 0.2, 0.3]]) {
+    const p = { epsilon, bias, kT, gammaL: 0.4 * fraction, gammaR: 0.4 * (1 - fraction), eta: 0, limit: 40, intervals: 32000 };
+    const q = P.bias(p), reference = finiteTemperatureReference(p);
+    close(q.I, reference.I, 1e-7, 'finite-temperature current');
+    close(q.n, reference.n, 1e-8, 'finite-temperature occupation');
+  }
+  // At particle-hole symmetry and equilibrium, f(E)+f(-E)=1 fixes n to
+  // half the finite-window spectral weight at every positive temperature.
+  const p = { epsilon: 0, gammaL: 0.1, gammaR: 0.3, eta: 0, bias: 0, kT: 0.005, limit: 40, intervals: 32000 };
+  const reference = finiteTemperatureReference(p);
+  close(reference.I, 0);
+  close(reference.n, reference.spectralArea / 2, 2e-12, 'independent quadrature symmetry');
+  close(P.bias(p).n, reference.n, 1e-9);
 });
 
 test('small-bias conductance approaches (e²/h)T(EF) for a spinless channel', () => {
@@ -389,4 +465,38 @@ test('matched-chain plots preserve unit transmission inside the lead band and br
   assert.ok(curve.some(([E, T]) => E === -2 && T === null), 'left channel threshold requires a path break');
   assert.ok(curve.some(([E, T]) => E === 2 && T === null), 'right channel threshold requires a path break');
   for (const E of [-1.99, -1, 0, 0.7, 1.99]) close(interpolateCurve(curve, E), 1, 2e-9);
+});
+
+test('Fano curves resolve displaced narrow resonances, their tails, and the exact zero', t => {
+  const S = require('../sampling.js');
+  for (const parameters of [
+    { sideEnergy: 1.25, coupling: 0.025 },
+    { sideEnergy: -1.5, coupling: 0.025 },
+    { sideEnergy: 0, coupling: 0.025 },
+    { sideEnergy: -0.1, coupling: 0.05 },
+    { sideEnergy: 0.7, coupling: 0.35 },
+    { sideEnergy: 0, coupling: 1 }
+  ]) {
+    const curve = S.fanoCurve(parameters);
+    const check = checkFanoCurve(curve, parameters);
+    close(curve[0][0], -3);
+    close(curve.at(-1)[0], 3);
+    for (let i = 1; i < curve.length; i++) assert.ok(curve[i][0] > curve[i - 1][0]);
+    close(check.atSideEnergy, 0, 1e-13);
+    for (const peak of check.peaks) close(peak.plottedTransmission, 1, 2e-10);
+    assert.ok(check.sampledMaximumInterpolationError < 0.0007,
+      `Fano interpolation error ${check.sampledMaximumInterpolationError} at E=${check.worstEnergy}`);
+    t.diagnostic(`sideEnergy=${parameters.sideEnergy}, coupling=${parameters.coupling}: ${curve.length} samples, max sampled error=${check.sampledMaximumInterpolationError.toExponential(3)}`);
+  }
+});
+
+test('disconnected Fano curves retain the central Lorentzian without a false transmission notch', () => {
+  const S = require('../sampling.js');
+  for (const sideEnergy of [-1.5, 0, 1.25]) {
+    const p = { sideEnergy, coupling: 0 };
+    const curve = S.fanoCurve(p), check = checkFanoCurve(curve, p);
+    close(check.atSideEnergy, 0.25 / (sideEnergy ** 2 + 0.25), 0.0007);
+    close(interpolateCurve(curve, 0), 1);
+    assert.ok(check.sampledMaximumInterpolationError < 0.0007);
+  }
 });
