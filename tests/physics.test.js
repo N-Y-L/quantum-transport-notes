@@ -13,8 +13,8 @@ function close(actual, expected, tolerance = 1e-11, message = '') {
 const cMultiply = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
 const cConjugate = a => [a[0], -a[1]];
 
-// Compare every matrix entry of i(G-G†) with G W G†. Here W is a diagonal
-// broadening supplied from the model specification, including 2η on every site.
+// Compare every matrix entry of i(G-G^\dagger) with G W G^\dagger. Here W is a diagonal
+// broadening supplied from the model specification, including 2\eta on every site.
 function assertSpectralIdentity(G, widths, tolerance = 2e-10) {
   for (let i = 0; i < G.length; i++) {
     for (let j = 0; j < G.length; j++) {
@@ -222,7 +222,7 @@ test('Fano spectral and flux identities include eta on both orbitals', () => {
 });
 
 test('fully isolated Fano orbitals report both delta-function states and distributional poles', () => {
-  // H=[[0.3,-0.4],[-0.4,-0.3]] has eigenvalues ±0.5 and normalized
+  // H=[[0.3,-0.4],[-0.4,-0.3]] has eigenvalues \pm0.5 and normalized
   // eigenvectors (1,2)/sqrt(5), (2,-1)/sqrt(5), respectively.
   const cases = [
     { epsilon: 0.3, sideEnergy: -0.3, coupling: 0.4, energies: [-0.5, 0.5], weights: [[0.2, 0.8], [0.8, 0.2]] },
@@ -272,7 +272,7 @@ test('broadening an isolated Fano device recovers its eigenstate spectral projec
 
 test('coupled two-orbital spectral trace has two units of total weight, with exact finite-window tails', () => {
   // For equal onsite energies and v>Gamma/4, the two effective-Hamiltonian
-  // poles are ±sqrt(v²−Gamma²/16)−i(Gamma/4+eta). Tr G has residue one
+  // poles are \pm\sqrt{v^2-\Gamma^2/16}-i(\Gamma/4+\eta). Tr G has residue one
   // at each pole, even though the individual site spectra are not this sum.
   const p = { epsilon: 0, sideEnergy: 0, coupling: 0.5, gammaL: 0.3, gammaR: 0.5, eta: 0.02 };
   const gamma = p.gammaL + p.gammaR;
@@ -356,7 +356,7 @@ test('finite-temperature interface grids agree with independent adaptive Simpson
   close(P.bias(p).n, reference.n, 1e-9);
 });
 
-test('small-bias conductance approaches (e²/h)T(EF) for a spinless channel', () => {
+test('small-bias conductance approaches (e^2/h)T(EF) for a spinless channel', () => {
   for (const bias of [0.0002, 0.0002037, -0.0002037]) {
     const p = { epsilon: 0.17, gammaL: 0.21, gammaR: 0.39, eta: 0, bias, kT: 0, limit: 1, intervals: 200000 };
     const q = P.bias(p);
@@ -449,7 +449,7 @@ for (const parameters of [
       assert.equal(check.peaks.length, 9, 'all nine weak-contact resonances must be resolved');
       assert.ok(Math.min(...check.peaks.map(peak => peak.halfMaximumWidth)) < 0.0006, 'reference must exercise the narrow outer resonances');
     }
-    t.diagnostic(`${curve.length} plotted samples; ${check.peaks.length} peaks; sampled maximum |T_plot−T_wave|=${check.sampledMaximumInterpolationError.toExponential(3)}`);
+    t.diagnostic(`${curve.length} plotted samples; ${check.peaks.length} peaks; sampled maximum |T_plot-T_wave|=${check.sampledMaximumInterpolationError.toExponential(3)}`);
   });
 }
 

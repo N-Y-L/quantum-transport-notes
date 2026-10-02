@@ -6,7 +6,7 @@
   "conventions": {
     "energies": "eV",
     "currents": "microampere per spin",
-    "lifetime": "femtosecond; single wide-band pole, one-electron probability survival time ℏ/(Γ+2η); maintained occupation determined separately",
+    "lifetime": "femtosecond; single wide-band pole, one-electron probability survival time \\(\\hbar/(\\Gamma+2\\eta)\\); maintained occupation determined separately",
     "hopping": "H[n,n+1] = -t",
     "bias": "muL = bias/2; muR = -bias/2",
     "current": "IL and IR enter device; Isink leaves device",

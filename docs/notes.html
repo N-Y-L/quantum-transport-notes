@@ -15,7 +15,7 @@
 <main>
 <h1>From waves to current</h1>
 <p>A perfectly clean wire has resistance. A discrete level acquires a width when connected to a wire. A second level can completely block transmission at one energy. These puzzles share one ingredient: a quantum system exchanges particles with reservoirs.</p>
-<p>We use a static, noninteracting one-electron Hamiltonian in an orthonormal orbital basis. Each channel includes its spin label; the experiments are <strong>spinless, with one channel in each lead</strong>. Independent identical spins would double the current. Energies are in eV; the plots use eV<sup>−1</sup> for densities and μA for currents. The route below follows the physical questions emphasized by <a href="https://arxiv.org/abs/cond-mat/0408319">Datta’s atomistic account of resistance</a>.</p>
+<p>We use a static, noninteracting one-electron Hamiltonian in an orthonormal orbital basis. Each channel includes its spin label; the experiments are <strong>spinless, with one channel in each lead</strong>. Independent identical spins would double the current. Energies are in \(\mathrm{eV}\); the plots use \(\mathrm{eV}^{-1}\) for densities and \(\mu\mathrm{A}\) for currents. The route below follows the physical questions emphasized by <a href="https://arxiv.org/abs/cond-mat/0408319">Datta’s atomistic account of resistance</a>.</p>
 <p><a href="#counting">Count incoming waves</a> → <a href="#resolvent">eliminate the leads</a> → <a href="#caroli">calculate transmission</a> → <a href="#occupation">fill the states</a> → <a href="#eta">check the numerics</a>.</p>
 
 <section id="counting">
@@ -70,7 +70,7 @@
 <details><summary>Which lifetime?</summary>
 <p>For this single, energy-independent pole, a one-electron state initially localized on the orbital has a return amplitude proportional to \(e^{-i\varepsilon_0t/\hbar}e^{-wt/\hbar}\). Its survival probability decays as \(e^{-2wt/\hbar}\). Consequently</p>
 <div class="equation">\[\tau_{\rm amplitude}=\frac{\hbar}{w},\qquad \tau_{\rm probability}=\frac{\hbar}{2w},\qquad \mathrm{FWHM}=2w.\]</div>
-<p>For physical escape alone, \(\eta=0\): \(\tau_{\rm probability}=\hbar/\Gamma\), while the amplitude time is \(2\hbar/\Gamma\). With \(\hbar\simeq0.658212\ \mathrm{eV\,fs}\), a width of \(0.1\) eV gives a probability time of about \(6.58\) fs. Band edges, energy-dependent self-energies and multiple poles generally spoil a single exponential. A width parameter is then not automatically a unique dwell time. Reservoir injection can maintain a steady occupation; this survival probability is not the occupation under bias.</p>
+<p>For physical escape alone, \(\eta=0\): \(\tau_{\rm probability}=\hbar/\Gamma\), while the amplitude time is \(2\hbar/\Gamma\). With \(\hbar\simeq0.658212\ \mathrm{eV\,fs}\), a width of \(0.1\,\mathrm{eV}\) gives a probability time of about \(6.58\,\mathrm{fs}\). Band edges, energy-dependent self-energies and multiple poles generally spoil a single exponential. A width parameter is then not automatically a unique dwell time. Reservoir injection can maintain a steady occupation; this survival probability is not the occupation under bias.</p>
 </details>
 </section>
 

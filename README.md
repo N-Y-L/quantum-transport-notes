@@ -13,7 +13,9 @@ adjustable SVG figures.
 
 **Double-click `index.html`.** No installation, server, account, build step, or
 internet connection is needed for the calculations. External references need a
-connection. Equations use the bundled KaTeX distribution.
+connection. Equations, controls, and readouts use LaTeX rendered by bundled KaTeX.
+Figure labels are rendered from TeX into self-contained SVG paths by bundled
+MathJax; exported figures retain their TeX source in `data-tex` attributes.
 
 | Experiment | Try this |
 |---|---|
@@ -21,10 +23,10 @@ connection. Equations use the bundled KaTeX distribution.
 | Let the leads continue | Change the length of a matched chain, then weaken its contacts. |
 | A detour that stops traffic | Move a side orbital and follow the transmission zero. |
 | Who fills the level? | Compare zero current at equilibrium with unequal reservoir filling under bias. |
-| The imaginary-number audit | Reduce η, shift the integration grid, and separate quadrature error from missing spectral tails. |
+| The imaginary-number audit | Reduce $\eta$, shift the integration grid, and separate quadrature error from missing spectral tails. |
 
 Read the [connected derivation](docs/notes.html) for the retarded resolvent,
-lead elimination, Γ, the Caroli trace, occupations, and lifetime conventions.
+lead elimination, $\Gamma$, the Caroli trace, occupations, and lifetime conventions.
 [Annotated references](docs/references.html) identify primary papers and Datta's
 teaching. Each experiment has a prediction question, an expandable explanation, reset and example buttons. “Save figure” exports
 the plotted SVG; “Save calculation” exports model parameters, units, results,
@@ -36,8 +38,8 @@ These exports are records, not importable sessions.
 ## Models and conventions
 
 All calculations use a static, noninteracting Hamiltonian in an orthonormal
-orbital basis, one spin species, energies in **eV**, currents in **μA**, and
-time in **fs**. A second identical independent spin species doubles the current.
+orbital basis, one spin species, energies in $\mathrm{eV}$, currents in $\mu\mathrm{A}$, and
+time in $\mathrm{fs}$. A second identical independent spin species doubles the current.
 Positive displayed current counts positive elementary charge times electron
 transfer from left to right; signed electric charge flow in that direction has
 the opposite sign.
@@ -51,16 +53,16 @@ the opposite sign.
   interactions, or inelastic scattering. Its occupation is a finite-window
   integral; the omitted spectral tail is displayed as a bound on omitted
   occupation.
-- The adjustable η occurs only in the **device** resolvent. Physical lead
-  self-energies use the retarded real-axis limit. Retaining finite η without
-  reinjection is mathematically an empty absorbing reservoir with width 2η.
+- The adjustable $\eta$ occurs only in the **device** resolvent. Physical lead
+  self-energies use the retarded real-axis limit. Retaining finite $\eta$ without
+  reinjection is mathematically an empty absorbing reservoir with width $2\eta$.
   The current audit includes this loss explicitly. It is not a conserving
   dephasing model.
 
-The probability survival time ℏ/Γ and amplitude e-folding time 2ℏ/Γ apply to a
-single wide-band pole with physical width Γ. A numerical retarded infinitesimal
+The probability survival time $\hbar/\Gamma$ and amplitude e-folding time $2\hbar/\Gamma$ apply to a
+single wide-band pole with physical width $\Gamma$. A numerical retarded infinitesimal
 does not establish a material lifetime. Bound-state spectral weight is
-distributional at η = 0; isolated occupations require additional preparation
+distributional at $\eta=0$; isolated occupations require additional preparation
 information.
 
 ## Reproduce the numerical checks
@@ -90,21 +92,21 @@ deterministic and use no random sampling. Independent checks cover:
 - Fano zeros, the disconnected side orbital, and the two-orbital spectral sum.
 - Zero-temperature current and occupation against exact arctangent integrals;
   small-bias conductance and finite-temperature current balance.
-- Finite η spectral identities, explicit absorbed flux, finite-window tails,
+- Finite $\eta$ spectral identities, explicit absorbed flux, finite-window tails,
   grid-offset aliasing, and resolution of narrow plotted resonances.
 
 The spectral integration is composite trapezoidal quadrature. At zero
 temperature, current and occupation integrals also split at the chemical
 potentials, using the one-sided occupations on each segment. This avoids
 grid-dependent Fermi-step errors. The bias interface compares two grid
-spacings. The η lab intentionally permits unresolved integrals and reports
+spacings. The $\eta$ lab intentionally permits unresolved integrals and reports
 their errors instead of clipping the answers.
 
 Plot samples and integration samples serve different purposes. Both chain and Fano
 curves use adaptive sampling around exact resonance and antiresonance energies.
-Zero-temperature Fermi curves display sharp steps. The η curve resolves the analytic peak for
+Zero-temperature Fermi curves display sharp steps. The $\eta$ curve resolves the analytic peak for
 display while its dots and table expose the actual uniform integration grid.
-The finite-η sink-current readout uses exact zero-temperature integrals over
+The finite-$\eta$ sink-current readout uses exact zero-temperature integrals over
 the infinite energy axis, separately from that intentionally fallible grid.
 
 ## File guide
@@ -116,6 +118,7 @@ the infinite energy axis, separately from that intentionally fallible grid.
 | `physics.js` | Numerical models, independent of the interface |
 | `sampling.js` | Resonance-aware curve sampling |
 | `app.js` | Controls, SVG drawings, readouts, and exports |
+| `svg-math.js` | Local TeX-to-SVG figure labels |
 | `docs/notes.html`, `docs/references.html` | Connected derivations and sources |
 | `tests/physics.test.js` | Independent physical and numerical checks |
 | `scripts/check-numerics.js` | Reproducible numerical report |
@@ -135,3 +138,4 @@ of `python3`. Stop the server with Ctrl+C.
 Original code, text, and figures: [MIT](LICENSE).
 Copyright (c) 2026 Neil Yuanting Li.
 Bundled KaTeX 0.19.0 retains its [third-party MIT license](vendor/katex/LICENSE).
+Bundled MathJax 3.2.2 retains its [Apache 2.0 license](vendor/mathjax/LICENSE).

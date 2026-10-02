@@ -3,7 +3,7 @@
 // Copyright (c) 2026 Neil Yuanting Li. MIT license; see LICENSE.
 
 // Independent reference calculations use scattering wave amplitudes and exact
-// Lorentzian integrals. All energies are in eV; currents are per spin in µA.
+// Lorentzian integrals. All energies are in eV; currents are per spin in microamperes.
 const fs = require('node:fs');
 const path = require('node:path');
 const P = require('../physics.js');
@@ -21,7 +21,7 @@ const divide = (a, b) => scale(multiply(a, [b[0], -b[1]]), 1 / normSquared(b));
  * backwards from the right lead, then resolving incident/reflected left waves.
  * No Green function, self-energy, or matrix inversion is used here. The two
  * leads are identical, so transmitted/incident probability currents have the
- * same velocity factor. Device and contact Hamiltonian elements are −hopping.
+ * same velocity factor. Device and contact Hamiltonian elements are -hopping.
  */
 function scatteringReference(E, { sites, hopping, contact, onsite = 0, leadHopping = 1, leadOnsite = 0 }) {
   if (!(Math.abs(E - leadOnsite) < 2 * leadHopping) || contact <= 0) {
@@ -30,7 +30,7 @@ function scatteringReference(E, { sites, hopping, contact, onsite = 0, leadHoppi
   const k = Math.acos(-(E - leadOnsite) / (2 * leadHopping));
   const forward = [Math.cos(k), Math.sin(k)];
   const backward = [forward[0], -forward[1]];
-  let right = [1, 0]; // ψ_(N+1), fixed normalization of the outgoing wave
+  let right = [1, 0]; // \psi_{N+1}, fixed normalization of the outgoing wave
   let here = scale(backward, leadHopping / contact); // right lead equation
   for (let site = sites; site >= 1; site--) {
     const rightHopping = site === sites ? contact : hopping;
@@ -52,8 +52,8 @@ function lorentzianArea(epsilon, width, lower, upper) {
 }
 
 /** Exact zero-temperature, finite-window WBL results, including an empty
- * absorbing channel of width 2η when η>0. Occupied ranges are clipped to the
- * actual (possibly shifted) integration window, not necessarily to either μ.
+ * absorbing channel of width 2\eta when \eta>0. Occupied ranges are clipped to the
+ * actual (possibly shifted) integration window, not necessarily to either chemical potential.
  */
 function zeroTemperatureReference(p) {
   const gamma = p.gammaL + p.gammaR;
@@ -286,8 +286,8 @@ function buildReport() {
       probabilityLifetimeFemtoseconds: 0.6582119569 / (0.4 + 2 * eta) };
   });
 
-  // An isolated level has a delta-function spectrum at η→0. Its sampled peak
-  // can land on a grid point or halfway between points: a smaller η alone does
+  // An isolated level has a delta-function spectrum at \eta\to0. Its sampled peak
+  // can land on a grid point or halfway between points: a smaller eta alone does
   // not produce a converged quadrature.
   const spectralGrid = [];
   for (const intervals of [100, 400, 1600, 6400]) {
@@ -343,7 +343,7 @@ function buildReport() {
   return roundTree({
     formatVersion: 1,
     runtime: { node: process.version },
-    conventions: { energies: 'eV', currents: 'microampere per spin', lifetime: 'femtosecond; single wide-band pole, one-electron probability survival time ℏ/(Γ+2η); maintained occupation determined separately', hopping: 'H[n,n+1] = -t', bias: 'muL = bias/2; muR = -bias/2', current: 'IL and IR enter device; Isink leaves device', eta: 'Finite eta is implemented as an empty absorbing channel of width 2 eta for current balance.', integration: 'Composite trapezoid. Zero-temperature bias integration inserts exact chemical-potential breakpoints and uses one-sided occupations on each segment. Spectral-grid diagnostics retain the specified uniform grid.', randomness: 'none' },
+    conventions: { energies: 'eV', currents: 'microampere per spin', lifetime: 'femtosecond; single wide-band pole, one-electron probability survival time \\(\\hbar/(\\Gamma+2\\eta)\\); maintained occupation determined separately', hopping: 'H[n,n+1] = -t', bias: 'muL = bias/2; muR = -bias/2', current: 'IL and IR enter device; Isink leaves device', eta: 'Finite eta is implemented as an empty absorbing channel of width 2 eta for current balance.', integration: 'Composite trapezoid. Zero-temperature bias integration inserts exact chemical-potential breakpoints and uses one-sided occupations on each segment. Spectral-grid diagnostics retain the specified uniform grid.', randomness: 'none' },
     independentReferences: { scattering: 'Outgoing-wave recurrence of the discrete Schrodinger equation, resolved into incident and reflected lead waves.', integration: 'Closed-form arctangent integrals of a Lorentzian, with the same finite energy window as the numerical integral.', finiteTemperature: 'Adaptive Simpson integration of analytic Lorentzian and tanh Fermi functions; integral tolerance 2e-12 per scalar integrand.', fano: 'T(E) = 0.25 (E-epsilon_s)^2 / ([E(E-epsilon_s)-v^2]^2 + 0.25(E-epsilon_s)^2); v=0 uses the central Lorentzian directly.', currentMicroampPerEV },
     matchedChain: { energies: openEnergies, hopping: 1, contact: 1, onsite: 0, eta: 0, rows: matched },
     mismatchedChain: { energies: openEnergies, eta: 0, rows: mismatch },
@@ -359,7 +359,7 @@ function buildReport() {
 
 if (require.main === module) {
   const report = buildReport();
-  console.log('Quantum transport numerical checks (eV, µA per spin; no randomness)');
+  console.log('Quantum transport numerical checks (eV, microamperes per spin; no randomness)');
   console.log(`Node ${process.version}; composite trapezoid integration`);
   console.log('\nMatched chain');
   console.table(report.matchedChain.rows);
