@@ -11,7 +11,7 @@ adjustable SVG figures.
 **[Read online](https://n-y-l.github.io/quantum-transport-notes/)** ·
 [Source repository](https://github.com/N-Y-L/quantum-transport-notes)
 
-**Double-click `index.html`.** No installation, server, account, build step, or
+**For a downloaded copy, open `index.html` in a browser.** No installation, server, account, build step, or
 internet connection is needed for the calculations. External references need a
 connection. Equations, controls, and readouts use LaTeX rendered by bundled KaTeX.
 Figure labels are rendered from TeX into self-contained SVG paths by bundled
@@ -25,10 +25,10 @@ MathJax; exported figures retain their TeX source in `data-tex` attributes.
 | Who fills the level? | Compare zero current at equilibrium with unequal reservoir filling under bias. |
 | The imaginary-number audit | Reduce $\eta$, shift the integration grid, and separate quadrature error from missing spectral tails. |
 
-Read the [connected derivation](docs/notes.html) for the retarded resolvent,
+Read the [connected derivation](docs/notes.html#contents) for the retarded resolvent,
 lead elimination, $\Gamma$, the Caroli trace, occupations, and lifetime conventions.
 [Annotated references](docs/references.html) identify primary papers and Datta's
-teaching. Each experiment has a prediction question, an expandable explanation, reset and example buttons. “Save figure” exports
+teaching. Use the derivation's contents list to jump to a topic, or the reading links below each experiment to move backward, continue, or open its derivation. Each experiment has a prediction question, an expandable explanation, reset and example buttons. “Save figure” exports
 the plotted SVG; “Save calculation” exports model parameters, units, results,
 and curve samples as JSON. A persistent download link permits another attempt; changing parameters clears
 the previous snapshot.
@@ -123,7 +123,7 @@ the infinite energy axis, separately from that intentionally fallible grid.
 | `tests/physics.test.js` | Independent physical and numerical checks |
 | `scripts/check-numerics.js` | Reproducible numerical report |
 
-Edit the HTML directly; there is no documentation build pipeline.
+Edit the HTML directly; there is no documentation build pipeline. On each release, keep the HTML asset-version queries, calculation-export version, and `package.json` version aligned.
 For an optional local preview with Python 3:
 
 ```sh

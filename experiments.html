@@ -3,17 +3,19 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Five quantum-transport experiments</title>
-  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <meta name="description" content="Five browser experiments on resonant transmission, finite chains, Fano interference, reservoir filling, and numerical broadening.">
+  <link rel="stylesheet" href="styles.css?v=1.3.0"><link rel="stylesheet" href="vendor/katex/katex.min.css">
   <script defer src="vendor/katex/katex.min.js"></script><script defer src="vendor/katex/auto-render.min.js"></script>
-  <script defer src="math.js"></script><script defer src="physics.js"></script><script defer src="sampling.js"></script>
-  <script defer src="svg-math.js"></script><script defer src="vendor/mathjax/tex-svg.js"></script><script defer src="app.js"></script>
+  <script defer src="math.js?v=1.3.0"></script><script defer src="physics.js?v=1.3.0"></script><script defer src="sampling.js?v=1.3.0"></script>
+  <script defer src="svg-math.js?v=1.3.0"></script><script defer src="vendor/mathjax/tex-svg.js"></script><script defer src="app.js?v=1.3.0"></script>
 </head>
 <body>
 <a class="skip-link" href="#level">Skip to experiments</a>
-<nav aria-label="Main navigation"><a href="index.html">Home</a><a href="docs/notes.html">Connected derivation</a><a href="docs/references.html">Sources</a><a href="#level">Level</a><a href="#chain">Chain</a><a href="#fano">Interference</a><a href="#bias">Bias</a><a href="#eta" aria-label="Eta audit">\(\eta\) audit</a></nav>
+<nav id="experiment-contents" aria-label="Main navigation"><a href="index.html">Home</a><a href="docs/notes.html#contents">Connected derivation</a><a href="docs/references.html">Sources</a><a href="#level">Level</a><a href="#chain">Chain</a><a href="#fano">Interference</a><a href="#bias">Bias</a><a href="#eta" aria-label="Eta audit">\(\eta\) audit</a></nav>
 <main>
 <h1>Five small transport experiments</h1>
 <p>Make a prediction before touching a control. Each curve is calculated in your browser from the displayed model. Energies and hopping amplitudes are in \(\mathrm{eV}\). We count <strong>one spin species</strong>; two identical, independent spin species double current and conductance, not transmission per channel.</p>
+<p class="small">The highlighted example matches the current settings. When a slider has keyboard focus, use the arrow keys to adjust it.</p>
 <noscript><p class="warning">JavaScript is required for the numerical experiments. The <a href="docs/notes.html">connected notes</a> remain readable.</p></noscript>
 <p id="app-error" class="warning" hidden></p>
 
@@ -34,12 +36,14 @@ G^r(E)=\frac{1}{E-\varepsilon_0+i(\Gamma_L+\Gamma_R)/2},
 <div id="level-readout" class="readout" aria-live="polite"></div>
 <details><summary>Check the prediction: why can a narrow resonance still reach one?</summary>
 <p>A source \(s_L\) from the left produces \([E-\varepsilon_0+i\Gamma/2]\psi_0=s_L\), where \(\psi_0\) is the orbital amplitude and \(\Gamma=\Gamma_L+\Gamma_R\). In flux-normalized lead channels, the transmitted amplitude is \(-i\sqrt{\Gamma_L\Gamma_R}\,G^r\), up to a lead phase convention; its squared magnitude gives \(T\). At resonance, \(T=4\Gamma_L\Gamma_R/\Gamma^2\): scaling both widths by the same factor cancels between numerator and denominator. The peak height stays fixed, while its energy width shrinks. At a fixed energy away from resonance, transmission does decrease.</p>
+<p>The peak height alone does not set a finite-bias current. At \(\eta=0\), \(\int_{-\infty}^{\infty}T(E)\,dE=2\pi\Gamma_L\Gamma_R/(\Gamma_L+\Gamma_R)\). Scaling both widths by \(\lambda\) preserves the peak but scales this area by \(\lambda\), so the current at fixed bias tends to zero as the contacts close.</p>
 </details>
 <p>For a one-dimensional incoming channel, the density of right-moving states contains \(1/v\), while the particle flux contains \(v\), where \(v\) is group velocity. Their product is \(1/h\) per energy, with \(h\) Planck's constant: slower electrons are more numerous in the same energy interval. Let \(f_L(E),f_R(E)\) be the reservoir occupation probabilities and \(e&gt;0\) the elementary charge. Then \(I=(e/h)\int T(E)[f_L-f_R]\,dE\), with positive current defined for electron transfer from left to right. At zero temperature and small bias, the conductance is \(G_{\rm cond}=(e^2/h)T(E_F)\), where \(E_F\) is the common equilibrium Fermi energy. Even \(T=1\) gives a finite two-terminal resistance \(h/e^2\). Reservoir injection limits the current; this is not evidence of energy dissipation inside the elastic orbital. <a href="https://doi.org/10.1017/CBO9780511805776.003">Datta, chapter 2</a>; <a href="https://arxiv.org/abs/2008.01275">Datta and coauthors, introduction</a>.</p>
 <details><summary>Recover the peak and the lifetime</summary>
 <p>At \(E=\varepsilon_0\), \(T_{\max}=4\Gamma_L\Gamma_R/(\Gamma_L+\Gamma_R)^2\leq1\). For total width \(\Gamma=\Gamma_L+\Gamma_R\), the single pole is \(\varepsilon_0-i\Gamma/2\). For a one-electron state initially localized on the orbital, the return amplitude is proportional to \(e^{-\Gamma t/(2\hbar)}\) and survival probability \(e^{-\Gamma t/\hbar}\), where \(t\) is elapsed time and \(\hbar=h/(2\pi)\). The amplitude e-folding time is \(2\hbar/\Gamma\); the probability e-folding time is \(\hbar/\Gamma\). These are exact for the ideal wide-band pole. They need not describe all decay near a lead band edge. Reservoir injection can maintain a steady occupation; this survival probability is not the mean orbital occupation under bias.</p>
 </details>
 <div class="buttons" data-export="level"></div>
+<p class="reading-nav" role="navigation" aria-label="Reading links after experiment 1"><a href="index.html#experiments" rel="prev">Previous: reading map</a> · <a href="#chain" rel="next">Next: Let the leads continue</a> · <a href="docs/notes.html#level">Derivation: Resonant level</a> · <a href="#experiment-contents">All experiments</a></p>
 </section>
 
 <section class="note" id="chain">
@@ -51,7 +55,7 @@ H_{nn}=\varepsilon_d,\quad H_{n,n+1}=-t,\qquad
 g_s^r(E)=\frac{E-i\sqrt{4t_\ell^2-E^2}}{2t_\ell^2}
 \quad (|E|&lt;2t_\ell).
 \]</div>
-<p>The lead hopping is \(t_\ell=1\,\mathrm{eV}\) and its on-site energy is zero. The contact hopping is \(-\tau\). The surface Green function \(g_s^r\) is the amplitude response at the end of the lead. Eliminating lead amplitudes from the Schrödinger equation gives \(\Sigma^r=\tau^2g_s^r\): amplitude leaves the device, propagates in the lead, and returns. Its negative imaginary part also records the outward flux. Outside the lead band the self-energy is real and there is no propagating channel. <a href="docs/notes.html">Derivation and causal branch</a>; <a href="https://arxiv.org/abs/2008.01275">Datta tutorial, contact self-energy example</a>.</p>
+<p>The lead hopping is \(t_\ell=1\,\mathrm{eV}\) and its on-site energy is zero. The contact hopping is \(-\tau\). The surface Green function \(g_s^r\) is the amplitude response at the end of the lead. Eliminating lead amplitudes from the Schrödinger equation gives \(\Sigma^r=\tau^2g_s^r\): amplitude leaves the device, propagates in the lead, and returns. Its negative imaginary part also records the outward flux. Outside the lead band the self-energy is real and there is no propagating channel. <a href="docs/notes.html#lead-surface">Derivation and causal branch</a>; <a href="https://arxiv.org/abs/2008.01275">Datta tutorial, contact self-energy example</a>.</p>
 <div class="buttons"><button data-preset="chain:matched">Invisible box</button><button data-preset="chain:weak">Weak contacts</button><button data-preset="chain:barrier">Shift the chain</button></div>
 <div class="workspace">
   <figure><svg id="chain-schematic" class="schematic" viewBox="0 0 680 105" role="img" aria-label="A finite chain joined to two semi-infinite leads"></svg><svg id="chain-plot" class="plot" viewBox="0 0 680 340" role="img" aria-label="Finite chain transmission versus energy"></svg><div class="legend"><span style="--ink:#145b91">Transmission</span><span class="dashed" style="--ink:#777">Lead band edges</span></div><figcaption>A single channel exists only for \(|E|&lt;2\,\mathrm{eV}\). At the band edges the group velocity vanishes; the plotted value there is zero by a threshold convention, not a resolved in-band dip. Numerical \(\eta=0\).</figcaption></figure>
@@ -68,9 +72,10 @@ g_s^r(E)=\frac{E-i\sqrt{4t_\ell^2-E^2}}{2t_\ell^2}
 <div class="equation">\[
 T_{L\leftarrow R}=\operatorname{Tr}[\Gamma_LG^r\Gamma_RG^a].
 \]</div>
-<p>The rightmost contact inside \(G^r\Gamma_RG^a\) injects from \(R\); \(L\) collects. With two physical terminals, no absorption, and flux conservation, the total transmission is equal in the reverse direction, even without assuming time-reversal symmetry. For these real hopping Hamiltonians the reciprocity is also explicit. Contact matrices have nonzero entries only at the endpoints, so this trace reduces to \(\Gamma_L\Gamma_R|G^r_{1N}|^2\). See <a href="https://doi.org/10.1088/0022-3719/4/8/018">Caroli et al. (1971)</a> and the <a href="docs/notes.html">full argument</a>.</p>
+<p>The rightmost contact inside \(G^r\Gamma_RG^a\) injects from \(R\); \(L\) collects. With two physical terminals, no absorption, and flux conservation, the total transmission is equal in the reverse direction, even without assuming time-reversal symmetry. For these real hopping Hamiltonians the reciprocity is also explicit. Contact matrices have nonzero entries only at the endpoints, so this trace reduces to \(\Gamma_L\Gamma_R|G^r_{1N}|^2\). See <a href="https://doi.org/10.1088/0022-3719/4/8/018">Caroli et al. (1971)</a> and the <a href="docs/notes.html#caroli">full argument</a>.</p>
 </details>
 <div class="buttons" data-export="chain"></div>
+<p class="reading-nav" role="navigation" aria-label="Reading links after experiment 2"><a href="#level" rel="prev">Previous: One level, two doors</a> · <a href="#fano" rel="next">Next: A detour that stops traffic</a> · <a href="docs/notes.html#lead-surface">Derivation: Chain and leads</a> · <a href="#experiment-contents">All experiments</a></p>
 </section>
 
 <section class="note" id="fano">
@@ -95,6 +100,7 @@ G^r_{00}=
 </details>
 <p>The limit is worth a second look: at any nonzero \(v\), transmission is exactly zero at \(E=\varepsilon_s\); at \(v=0\), the side orbital is disconnected and the conducting level recovers its ordinary resonance. The zero becomes arbitrarily narrow as \(v\) shrinks. Energy resolution and temperature decide whether it has an appreciable effect on a measured current.</p>
 <div class="buttons" data-export="fano"></div>
+<p class="reading-nav" role="navigation" aria-label="Reading links after experiment 3"><a href="#chain" rel="prev">Previous: Let the leads continue</a> · <a href="#bias" rel="next">Next: Who fills the level?</a> · <a href="docs/notes.html#side-orbital">Derivation: Side-orbital interference</a> · <a href="#experiment-contents">All experiments</a></p>
 </section>
 
 <section class="note" id="bias">
@@ -116,11 +122,12 @@ n=\int\frac{dE}{2\pi}|G^r|^2(\Gamma_L f_L+\Gamma_R f_R).
 <p>For total width \(\Gamma=\Gamma_L+\Gamma_R\), write the occupation integral as \(n=\int [A(E)/(2\pi)]\,[\Gamma_Lf_L(E)+\Gamma_Rf_R(E)]/\Gamma\,dE\). The spectral density counts available orbital weight; the second factor tells how strongly that weight is occupied. At equilibrium \(f_L=f_R\), so the directed currents cancel. If also \(\varepsilon_0=\mu_L=\mu_R=0\), symmetry gives exactly \(n=1/2\) on the infinite energy axis. The displayed finite-window result is slightly smaller because it omits occupied spectral tails.</p>
 <p>When positive bias puts essentially the whole resonance between the two chemical potentials, \(f_L\simeq1\) and \(f_R\simeq0\) across its weight. Normalization of \(A/(2\pi)\) then gives \(n\simeq\Gamma_L/\Gamma\). This is an asymptotic statement: Lorentzian tails extend beyond every finite bias window. The source can fill slowly even while the drain empties quickly.</p>
 </details>
-<p><strong>Finite-bias assumption:</strong> \(\mu_L=+V/2\,\mathrm{eV}\) and \(\mu_R=-V/2\,\mathrm{eV}\) when the numerical voltage \(V\) is in volts. The orbital energy and the wide-band self-energies are held fixed as \(V\) changes; there is no Poisson calculation, charging energy, interaction correction, or bias-induced structural change. This is an assigned voltage model, not a prediction of the internal potential of a real device. At \(\eta=0\), the currents entering from the two leads obey \(I_L+I_R=0\).</p>
+<p><strong>Finite-bias assumption:</strong> \(\mu_L=+eV/2\) and \(\mu_R=-eV/2\). For example, \(V=1\,\mathrm{V}\) gives \(\mu_L=+0.5\,\mathrm{eV}\) and \(\mu_R=-0.5\,\mathrm{eV}\). The orbital energy and the wide-band self-energies are held fixed as \(V\) changes; there is no Poisson calculation, charging energy, interaction correction, or bias-induced structural change. This is an assigned voltage model, not a prediction of the internal potential of a real device. At \(\eta=0\), the currents entering from the two leads obey \(I_L+I_R=0\).</p>
 <details><summary>Why the missing Pauli factors are not missing</summary>
 <p>For elastic independent-electron transport, the net occupation factor is \(f_L(1-f_R)-f_R(1-f_L)=f_L-f_R\). Equal occupations cancel the two directed flows. At \(T=0\), the current is an integral over the interval between the chemical potentials; thermal broadening replaces its sharp edges by smooth weights.</p>
 </details>
 <div class="buttons" data-export="bias"></div>
+<p class="reading-nav" role="navigation" aria-label="Reading links after experiment 4"><a href="#fano" rel="prev">Previous: A detour that stops traffic</a> · <a href="#eta" rel="next">Next: The imaginary-number audit</a> · <a href="docs/notes.html#occupation">Derivation: Occupation</a> · <a href="#experiment-contents">All experiments</a></p>
 </section>
 
 <section class="note" id="eta">
@@ -130,7 +137,7 @@ n=\int\frac{dE}{2\pi}|G^r|^2(\Gamma_L f_L+\Gamma_R f_R).
 G_\eta^r=[(E+i\eta)\mathbf1-H-\Sigma_L^r(E)-\Sigma_R^r(E)]^{-1},\qquad
 A=G_\eta^r(\Gamma_L+\Gamma_R+2\eta\mathbf1)G_\eta^a.
 \]</div>
-<p>The retarded boundary condition means \(\eta\to0^+\); it selects the response after the source is applied. It does not assign a measured material lifetime. A finite positive \(\eta\), with physical lead self-energies evaluated at \(E+i0^+\), acts algebraically like an extra self-energy \(-i\eta\mathbf1\), with width \(\Gamma_\eta=2\eta\) per orbital. If no incoming particles are supplied with it, it is an empty absorbing reservoir. It is not a conserving model of inelastic scattering or pure dephasing. <a href="docs/notes.html">Resolvent, spectral identity, and injection derivations</a>; <a href="https://arxiv.org/abs/2008.01275">Datta tutorial, scattering self-energies</a>.</p>
+<p>The retarded boundary condition means \(\eta\to0^+\); it selects the response after the source is applied. It does not assign a measured material lifetime. A finite positive \(\eta\), with physical lead self-energies evaluated at \(E+i0^+\), acts algebraically like an extra self-energy \(-i\eta\mathbf1\), with width \(\Gamma_\eta=2\eta\) per orbital. If no incoming particles are supplied with it, it is an empty absorbing reservoir. It is not a conserving model of inelastic scattering or pure dephasing. <a href="docs/notes.html#resolvent">Resolvent</a>, <a href="docs/notes.html#spectral">spectral identity</a>, and <a href="docs/notes.html#occupation">injection derivations</a>; <a href="https://arxiv.org/abs/2008.01275">Datta tutorial, scattering self-energies</a>.</p>
 <p>For one wide-band pole, \(e^{-\eta t/\hbar}\) is the additional amplitude damping and \(e^{-2\eta t/\hbar}\) is the additional probability damping. If this is an intentional absorber, its probability e-folding time is \(\hbar/(2\eta)\); a physical escape width \(\Gamma\) instead gives \(\hbar/\Gamma\). Here \(\hbar=0.6582119569\,\mathrm{eV\,fs}\). A numerical \(\eta\) becomes a credible approximation only when the observable has converged as \(\eta\) decreases and the energy integration is also resolved.</p>
 <div class="buttons"><button data-preset="eta:resolved">Resolved open level</button><button data-preset="eta:absorber">An obvious absorber</button><button data-preset="eta:missed">Miss a narrow peak</button><button data-preset="eta:isolated">Broaden an isolated level</button></div>
 <div class="workspace">
@@ -155,8 +162,9 @@ A=G_\eta^r(\Gamma_L+\Gamma_R+2\eta\mathbf1)G_\eta^a.
 <p>When the spectrum contains a bound state or a narrowing antiresonance, pointwise convergence is not enough. For a discrete isolated level, the limit is a delta function: integrating it and taking \(\eta\) to zero are not interchangeable on a fixed grid. The exact real-axis bound pole is not an ordinary finite density value.</p>
 </details>
 <div class="buttons" data-export="eta"></div>
+<p class="reading-nav" role="navigation" aria-label="Reading links after experiment 5"><a href="#bias" rel="prev">Previous: Who fills the level?</a> · <a href="docs/notes.html#next" rel="next">Next: further measurements</a> · <a href="docs/notes.html#eta">Derivation: Numerical convergence</a> · <a href="#experiment-contents">All experiments</a></p>
 </section>
 </main>
-<footer><p><a href="index.html">Home</a> · <a href="docs/notes.html">Connected derivation</a> · <a href="docs/references.html">References</a> · <a href="README.md">Reproduce the checks</a></p><p>Copyright (c) 2026 Neil Yuanting Li. <a href="LICENSE">MIT license</a>.</p></footer>
+<footer><p><a href="index.html">Home</a> · <a href="docs/notes.html#contents">Connected derivation</a> · <a href="docs/references.html">References</a> · <a href="README.md">Reproduce the checks</a></p><p>Copyright (c) 2026 Neil Yuanting Li. Original text and code: <a href="LICENSE">MIT license</a>. Bundled <a href="vendor/katex/LICENSE">KaTeX (MIT)</a> and <a href="vendor/mathjax/LICENSE">MathJax (Apache 2.0)</a> retain their respective licenses.</p></footer>
 </body>
 </html>

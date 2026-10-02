@@ -23,6 +23,11 @@ button, select, input { font: 15px Arial, sans-serif; }
 input[type=range], .control select { width: 100%; max-width: 100%; }
 button { padding: 5px 9px; cursor: pointer; }
 .buttons { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0; }
+.buttons button[aria-pressed="true"] { background: #edf4fa; color: #123b57; border-color: #145b91; box-shadow: inset 0 0 0 1px #145b91; }
+.contents { font-size: 16px; line-height: 1.8; }
+.contents a { display: inline-block; margin-right: 14px; }
+.reading-nav { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 22px 0 8px; font-size: 16px; border: 0; padding: 0; }
+.reading-nav a { margin: 0; }
 .plot { width: 100%; height: auto; display: block; }
 .schematic { width: 100%; max-width: 650px; height: auto; display: block; }
 .readout { border-top: 1px solid #aaa; padding-top: 12px; margin: 14px 0; font-size: 16px; }

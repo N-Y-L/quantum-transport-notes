@@ -133,7 +133,8 @@
   };
   function slider(group,key,label,min,max,step,unit='') {
     const id=group+'-'+key;
-    return '<div class="control"><label for="'+id+'"><span>'+label+'</span><output for="'+id+'" id="'+id+'-value"></output></label><input id="'+id+'" type="range" aria-label="'+controlNames[key]+'" min="'+min+'" max="'+max+'" step="'+step+'" data-group="'+group+'" data-key="'+key+'"><span class="small">'+min+' to '+max+(unit?' '+unit:'')+'</span></div>';
+    const range=mathNumber(min)+' to '+math`${numberTex(max)}${unit?tex`\,\mathrm{${unit}}`:''}`;
+    return '<div class="control"><label for="'+id+'"><span>'+label+'</span><output for="'+id+'" id="'+id+'-value"></output></label><input id="'+id+'" type="range" aria-label="'+controlNames[key]+'" min="'+min+'" max="'+max+'" step="'+step+'" data-group="'+group+'" data-key="'+key+'" data-unit="'+unit+'"><span class="small">'+range+'</span></div>';
   }
   function select(group,key,label,items) {
     const id=group+'-'+key;
@@ -143,12 +144,17 @@
     for (const [key,value] of Object.entries(state[group])) {
       const control=$(group+'-'+key); if(!control)continue;
       control.value=value;
+      if(control.type==='range')control.setAttribute('aria-valuetext',fmt(value)+(control.dataset.unit?' '+control.dataset.unit:''));
       const output=$(group+'-'+key+'-value'); if(output)output.innerHTML=mathNumber(value);
+    }
+    for(const button of document.querySelectorAll('[data-preset^="'+group+':"]')) {
+      const name=button.dataset.preset.split(':')[1];
+      button.setAttribute('aria-pressed',String(Object.entries(presets[group][name]).every(([key,value])=>state[group][key]===value)));
     }
   }
   function readout(group,paragraphs) { $(group+'-readout').innerHTML=paragraphs.map(s=>'<p>'+s+'</p>').join(''); }
   function record(group,parameters,results,curves) {
-    records[group]={format:'quantum-transport-notes/1',version:'1.2.0',experiment:group,
+    records[group]={format:'quantum-transport-notes/1',version:'1.3.0',experiment:group,
       units:{energy:'eV',current:'microampere',time:'fs',spectralDensity:'1/eV'},
       conventions:{spinSpecies:1,retardedSign:'E + i eta',leadEta:0,leadCurrent:'positive entering device',model:'noninteracting, coherent, elastic; finite eta interpreted as empty absorber'},
       parameters,results,curves};
@@ -172,7 +178,7 @@
     const r=P.chain(p.probe,p), s=r.selfEnergy;
     readout('chain',[
       `<strong>At ${math`E=${numberTex(p.probe)}\,\mathrm{eV}`}: ${math`T=${numberTex(r.T)}`}.</strong> `+(r.channels?`${math`R=${numberTex(r.R)}`}; ${math`T+R=${numberTex(r.T+r.R,10)}`}.`:'No propagating lead channel at this energy; an incident-flux reflection probability is not defined.'),
-      `Each contact: ${math`\Sigma^r=(${numberTex(s.re)}-i\,${numberTex(-s.im)})\,\mathrm{eV}`}; ${math`\Gamma=-2\operatorname{Im}\Sigma^r=${numberTex(s.gamma)}\,\mathrm{eV}`}.`,
+      `The identical contacts have ${math`\Sigma_L^r=\Sigma_R^r=(${numberTex(s.re)}-i\,${numberTex(-s.im)})\,\mathrm{eV}`} and ${math`\Gamma_L=\Gamma_R=${numberTex(s.gamma)}\,\mathrm{eV}`}. Each width is ${math`-2\operatorname{Im}\Sigma_\alpha^r`}.`,
       `The finite device has ${p.sites} site${p.sites>1?'s':''}. Leads remain semi-infinite, with hopping ${math`1\,\mathrm{eV}`} and on-site energy ${math`0`}.`
     ]); record('chain',{...p,eta:0,leadHopping:1,leadOnsite:0},r,curves);
   }
@@ -241,7 +247,7 @@
     readout('eta',[
       `<strong>Sampled full area = ${mathNumber(d.area,7)}; exact same-window area = ${mathNumber(d.analyticArea,7)}.</strong>`,
       `Quadrature error = ${mathNumber(d.quadratureError,7)}; omitted spectral tail = ${mathNumber(d.omittedTail,7)}. ${math`\Delta E=${numberTex(d.gridStep,6)}\,\mathrm{eV}`}; full width ${math`\Gamma+2\eta=${numberTex(d.width,6)}\,\mathrm{eV}`}. `+(d.gridStep>half?'The integration spacing exceeds the half-width; inspect the alignment and refinement table.':'Refine and shift the grid to test resolution.'),
-      `At resonance for left incidence: ${math`T=${numberTex(d.peakT)}`}, ${math`R=${numberTex(d.peakR)}`}, absorbed probability = ${mathNumber(d.peakLoss)}. Their sum is ${mathNumber(d.peakT+d.peakR+d.peakLoss,10)}. The contact-only spectral area on the infinite axis is ${mathNumber(ratio)}.`,
+      s.gamma===0 ? `The orbital is disconnected from the physical leads, so they inject no particles. This spectral weight comes from the ${math`\eta`} term; the physical-contact contribution is zero.` : `At resonance for left incidence: ${math`T=${numberTex(d.peakT)}`}, ${math`R=${numberTex(d.peakR)}`}, absorbed probability = ${mathNumber(d.peakLoss)}. Their sum is ${mathNumber(d.peakT+d.peakR+d.peakLoss,10)}. The contact-only spectral area on the infinite axis is ${mathNumber(ratio)}.`,
       `At ${math`V=1\,\mathrm{V}`} and temperature zero (analytic integrals): ${math`I_L=${numberTex(currents.IL)}\,\mu\mathrm{A}`}; ${math`I_R=${numberTex(currents.IR)}\,\mu\mathrm{A}`}; ${math`I_L+I_R=I_{\mathrm{sink}}=${numberTex(currents.Isink)}\,\mu\mathrm{A}`}. Both lead currents are defined entering the device. `+(s.gamma===0?'There is no physical-lead injection.':`The pair current ${math`I=${numberTex(currents.I)}\,\mu\mathrm{A}`} alone hides this sink.`),
       s.eta>0 ? `If ${math`\eta`} is deliberately interpreted as absorption, its additional probability e-folding time is ${math`\hbar/(2\eta)=${numberTex(P.constants.hbarEVfs/(2*s.eta))}\,\mathrm{fs}`}. This is not a lifetime measurement.` : `${math`\eta=0`} adds no artificial absorption; any linewidth here comes from physical contacts.`
     ]);

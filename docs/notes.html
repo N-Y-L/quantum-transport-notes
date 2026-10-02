@@ -4,11 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>From waves to current · Quantum transport notes</title>
-<link rel="stylesheet" href="../styles.css">
+<meta name="description" content="A connected derivation of quantum transport from incoming waves through retarded Green functions, contact self-energies, transmission, occupation, and convergence.">
+<link rel="stylesheet" href="../styles.css?v=1.3.0">
 <link rel="stylesheet" href="../vendor/katex/katex.min.css">
 <script defer src="../vendor/katex/katex.min.js"></script>
 <script defer src="../vendor/katex/auto-render.min.js"></script>
-<script defer src="../math.js"></script>
+<script defer src="../math.js?v=1.3.0"></script>
 </head>
 <body>
 <nav aria-label="Main navigation"><a href="../index.html">Home</a> · <a href="../experiments.html">Experiments</a> · <a href="notes.html" aria-current="page">Notes</a> · <a href="references.html">Sources</a></nav>
@@ -16,7 +17,7 @@
 <h1>From waves to current</h1>
 <p>A perfectly clean wire has resistance. A discrete level acquires a width when connected to a wire. A second level can completely block transmission at one energy. These puzzles share one ingredient: a quantum system exchanges particles with reservoirs.</p>
 <p>We use a static, noninteracting one-electron Hamiltonian in an orthonormal orbital basis. Each channel includes its spin label; the experiments are <strong>spinless, with one channel in each lead</strong>. Independent identical spins would double the current. Energies are in \(\mathrm{eV}\); the plots use \(\mathrm{eV}^{-1}\) for densities and \(\mu\mathrm{A}\) for currents. The route below follows the physical questions emphasized by <a href="https://arxiv.org/abs/cond-mat/0408319">Datta’s atomistic account of resistance</a>.</p>
-<p><a href="#counting">Count incoming waves</a> → <a href="#resolvent">eliminate the leads</a> → <a href="#caroli">calculate transmission</a> → <a href="#occupation">fill the states</a> → <a href="#eta">check the numerics</a>.</p>
+<nav class="contents" id="contents" aria-label="Derivation contents"><p><strong>In this derivation:</strong> <a href="#counting">1. Incoming waves</a> · <a href="#resolvent">2. Response and leads</a> · <a href="#spectral">3. Spectral weight</a> · <a href="#caroli">4. Transmission</a> · <a href="#level">5. One resonance</a> · <a href="#occupation">6. Occupation</a> · <a href="#applications">7. Chains and side branches</a> · <a href="#eta">8. Numerical convergence</a> · <a href="#next">9. Further measurements</a></p></nav>
 
 <section id="counting">
 <h2>1. How much current fits in one channel?</h2>
@@ -27,6 +28,7 @@
 <details><summary>Why “two-terminal” matters</summary>
 <p>The voltage here is the difference between the supplying reservoirs’ electrochemical potentials, divided by \(e\). A voltage probe placed inside a conductor need not measure that same drop. Contact resistance and resistance inferred from internal probes are different experimental quantities; neither should be identified automatically with local dissipation. The present experiments implement the two-reservoir definition.</p>
 </details>
+<p class="reading-nav" role="navigation" aria-label="Reading links after counting"><a href="#contents">Contents</a> · <a href="../experiments.html#level">Back to experiments: One level</a></p>
 </section>
 
 <section id="resolvent">
@@ -40,6 +42,7 @@
 <details><summary>Elimination in two lines</summary>
 <p>The block equations are \((z-H_D)\psi_D-\tau\psi_\ell=s_D\) and \((z-H_\ell)\psi_\ell-\tau^\dagger\psi_D=s_\ell\). Substitute \(\psi_\ell=g_\ell(\tau^\dagger\psi_D+s_\ell)\). Then \((z-H_D-\tau g_\ell\tau^\dagger)\psi_D=s_D+\tau g_\ell s_\ell\): the same elimination supplies both the self-energy and the incoming source.</p>
 </details>
+<p class="reading-nav" role="navigation" aria-label="Reading links after resolvent"><a href="#contents">Contents</a> · <a href="../experiments.html#chain">Back to experiments: Chain</a></p>
 </section>
 
 <section id="spectral">
@@ -52,6 +55,7 @@
 <details><summary>Check the sign and the factor of two</summary>
 <p>Use \(G^r-G^a=G^r[(G^a)^{-1}-(G^r)^{-1}]G^a\). The inverse difference is \(-i(\Gamma_L+\Gamma_R+2\eta\mathbf1)\). Multiplication by \(i\) yields the displayed identity. The infinitesimal appears twice because the advanced inverse contains \(-i\eta\).</p>
 </details>
+<p class="reading-nav" role="navigation" aria-label="Reading links after spectral"><a href="#contents">Contents</a> · <a href="../experiments.html#eta">Back to experiments: Numerical audit</a></p>
 </section>
 
 <section id="caroli">
@@ -60,6 +64,7 @@
 <div class="equation">\[\mathcal T_{L\leftarrow R}=\operatorname{Tr}[\Gamma_LG^r\Gamma_RG^a].\]</div>
 <p>This is the Caroli transmission expression. The order has a physical meaning: \(R\) injects, \(G^r\) propagates, \(L\) collects; \(G^a\) supplies the conjugate amplitude. It is a squared matrix norm and therefore nonnegative. <a href="https://doi.org/10.1088/0022-3719/4/8/018">Caroli et al. (1971)</a>; <a href="https://arxiv.org/html/2008.01275">Camsari, Chowdhury &amp; Datta, §2</a>.</p>
 <p>With only two leads, elastic unitary scattering ensures \(\mathcal T_{L\leftarrow R}=\mathcal T_{R\leftarrow L}\), even at a magnetic field. Cyclically permuting a trace alone does not prove it. Extra absorbing terminals remove that two-terminal argument. In our reciprocal models both directions still agree at finite \(\eta\), although reflection plus transmission can be less than one. <a href="https://doi.org/10.1103/PhysRevB.23.6851">Fisher &amp; Lee</a>.</p>
+<p class="reading-nav" role="navigation" aria-label="Reading links after caroli"><a href="#contents">Contents</a> · <a href="../experiments.html#chain">Back to experiments: Chain</a></p>
 </section>
 
 <section id="level">
@@ -72,6 +77,7 @@
 <div class="equation">\[\tau_{\rm amplitude}=\frac{\hbar}{w},\qquad \tau_{\rm probability}=\frac{\hbar}{2w},\qquad \mathrm{FWHM}=2w.\]</div>
 <p>For physical escape alone, \(\eta=0\): \(\tau_{\rm probability}=\hbar/\Gamma\), while the amplitude time is \(2\hbar/\Gamma\). With \(\hbar\simeq0.658212\ \mathrm{eV\,fs}\), a width of \(0.1\,\mathrm{eV}\) gives a probability time of about \(6.58\,\mathrm{fs}\). Band edges, energy-dependent self-energies and multiple poles generally spoil a single exponential. A width parameter is then not automatically a unique dwell time. Reservoir injection can maintain a steady occupation; this survival probability is not the occupation under bias.</p>
 </details>
+<p class="reading-nav" role="navigation" aria-label="Reading links after level"><a href="#contents">Contents</a> · <a href="../experiments.html#level">Back to experiments: One level</a></p>
 </section>
 
 <section id="occupation">
@@ -84,16 +90,18 @@
 <details><summary>States that neither reservoir can fill</summary>
 <p>A bound state with no coupling to any propagating lead state can contribute to \(A\) without appearing in \(A_L+A_R\) after a naive pointwise \(\eta=0\) substitution. Its occupation requires initial-state information or a specified equilibration mechanism. Multiple bound states can also produce persistent oscillations rather than a unique steady state. The scattering-state occupation formula must not silently assign these states zero occupation. <a href="https://arxiv.org/abs/0803.0914">Khosravi et al. (2008)</a>.</p>
 </details>
+<p class="reading-nav" role="navigation" aria-label="Reading links after occupation"><a href="#contents">Contents</a> · <a href="../experiments.html#bias">Back to experiments: Bias</a></p>
 </section>
 
 <section id="applications">
 <h2>7. Matching a wire; blocking it with a side branch</h2>
-<p>For a semi-infinite chain with onsite energy zero and hopping \(-t_0\), removing the endpoint leaves the same chain. Thus its surface Green function satisfies \(g^r=[z-t_0^2g^r]^{-1}\), with \(z=E+i0^+\). Multiplying through gives the quadratic \(t_0^2(g^r)^2-zg^r+1=0\). For a contact hopping \(-t_c\), its physical root inside the band gives</p>
+<p id="lead-surface">For a semi-infinite chain with onsite energy zero and hopping \(-t_0\), removing the endpoint leaves the same chain. Thus its surface Green function satisfies \(g^r=[z-t_0^2g^r]^{-1}\), with \(z=E+i0^+\). Multiplying through gives the quadratic \(t_0^2(g^r)^2-zg^r+1=0\). For a contact hopping \(-t_c\), its physical root inside the band gives</p>
 <div class="equation">\[g^r(E)=\frac{E-i\sqrt{4t_0^2-E^2}}{2t_0^2},\qquad |E|&lt;2t_0,\qquad \Sigma^r=|t_c|^2g^r.\]</div>
 <p>Choose the branch with negative imaginary part and \(g^r\sim1/E\) at large energy. Identical hoppings and onsite energies throughout produce \(\mathcal T=1\) inside the band: the device boundary is only bookkeeping. Contact mismatch reflects waves, and repeated reflections create resonances. Outside the lead band there is no incoming propagating channel. At a band edge, distinguish the limit from inside the band from the zero-velocity threshold itself. <a href="../experiments.html#chain">Try the chain</a>; compare the discrete contact construction in <a href="https://arxiv.org/html/2008.01275">Camsari, Chowdhury &amp; Datta, §4.2</a>.</p>
-<p>Now attach a side level \(\varepsilon_s\), with hopping \(-v\), to a wide-band conducting level \(\varepsilon_0\). Write the orbital amplitudes as \(\psi_0,\psi_s\). For a source \(s_L\) entering through the conducting level and \(\eta=0\), their equations are \((E-\varepsilon_0+i\Gamma/2)\psi_0+v\psi_s=s_L\) and \(v\psi_0+(E-\varepsilon_s)\psi_s=0\). Solving gives</p>
+<p id="side-orbital">Now attach a side level \(\varepsilon_s\), with hopping \(-v\), to a wide-band conducting level \(\varepsilon_0\). Write the orbital amplitudes as \(\psi_0,\psi_s\). For a source \(s_L\) entering through the conducting level and \(\eta=0\), their equations are \((E-\varepsilon_0+i\Gamma/2)\psi_0+v\psi_s=s_L\) and \(v\psi_0+(E-\varepsilon_s)\psi_s=0\). Solving gives</p>
 <div class="equation">\[G^r_{00}=\frac{E-\varepsilon_s}{(E-\varepsilon_0+i\Gamma/2)(E-\varepsilon_s)-v^2}.\]</div>
 <p>For nonzero \(v\), the side-orbital equation forces \(\psi_0=0\) at \(E=\varepsilon_s\). Since the right lead couples only to that orbital, transmission vanishes and the incident flux is reflected. The wave that visits the side level cancels the transmitted background. This is a discrete-state/continuum interference mechanism, the setting of <a href="https://doi.org/10.1103/PhysRev.124.1866">Fano’s original analysis</a>. The particular two-orbital formula above follows from this model, not from an assumed asymmetric fit. <a href="../experiments.html#fano">Move the side level</a>. The zero gives zero linear conductance at zero temperature when \(E_F=\varepsilon_s\); a finite current integrates neighboring energies as well. At \(v=0\), the side orbital is isolated; its spectral delta remains, but the transmission zero disappears.</p>
+<p class="reading-nav" role="navigation" aria-label="Reading links after applications"><a href="#contents">Contents</a> · <a href="../experiments.html#fano">Back to experiments: Interference</a></p>
 </section>
 
 <section id="eta">
@@ -111,14 +119,16 @@
 <li><strong>Window error:</strong> extend both energy limits. A finer grid cannot recover tails outside its window.</li>
 </ol>
 <p>For a Lorentzian over \([a,b]\), the exact area is \(\{\arctan[(b-\varepsilon_0)/w]-\arctan[(a-\varepsilon_0)/w]\}/\pi\). Compare the numerical area to this value first, then to one. Resolve every finite-width feature before reducing the regulator further. For a discrete spectrum, take the distributional limit only after integration; setting \(\eta=0\) pointwise loses delta functions.</p>
+<p class="reading-nav" role="navigation" aria-label="Reading links after eta"><a href="#contents">Contents</a> · <a href="../experiments.html#eta">Back to experiments: Numerical audit</a></p>
 </section>
 
 <section id="next">
 <h2>9. What would you measure next?</h2>
 <p>Average current counts transmissions. Partition noise tests their fluctuations: a channel with probability \(\mathcal T\) produces a factor \(\mathcal T(1-\mathcal T)\) at zero temperature. A perfectly open channel has no partition noise. <a href="https://doi.org/10.1103/PhysRevB.46.12485">Büttiker (1992)</a>. Interferometers add controllable phases; correlations can reveal information absent from the mean current.</p>
 <p>Strong Coulomb effects, fractionalized excitations and superconducting conversion require additional physics. The elementary one-electron Caroli calculation here does not establish them. A useful next step is the interacting-current formulation of <a href="https://doi.org/10.1103/PhysRevLett.68.2512">Meir &amp; Wingreen (1992)</a>: ask which quantities describing occupation must be supplied once independent-electron scattering is insufficient.</p>
+<p class="reading-nav" role="navigation" aria-label="Reading links after next"><a href="#contents">Contents</a> · <a href="../experiments.html#level">Back to experiments: First experiment</a></p>
 </section>
-<p><a href="../experiments.html">Return to the experiments</a> · <a href="references.html">Annotated sources</a></p>
+<p class="reading-nav"><a href="#contents">Derivation contents</a> · <a href="../experiments.html#experiment-contents">All experiments</a> · <a href="references.html">Annotated sources</a></p>
 </main>
 <footer><p>Copyright (c) 2026 Neil Yuanting Li. Original text and code: <a href="../LICENSE">MIT License</a>.</p></footer>
 </body>
