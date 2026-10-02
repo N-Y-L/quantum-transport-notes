@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quantum transport: visual notes — Neil Yuanting Li</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+  <h1>Quantum transport: visual notes</h1>
+  <p>Neil Yuanting Li</p>
+  <p>Take a small quantum system and attach two large reservoirs. Its energy levels have become entrances and exits. Which electrons get through, which turn back, and which remain inside long enough to matter? These notes build the answer from waves, probability current, and a few small matrices.</p>
+  <p>The approach is physical: predict an effect, adjust a parameter, then account for the result. A perfectly transmitting wire still has a two-terminal resistance. A second orbital can close a conducting path. And the tiny imaginary number added to a calculation can quietly remove particles. Each is a useful puzzle.</p>
+  <p>Assumed background: basic graduate quantum mechanics and some condensed matter. No quantum field theory or Green-function transport formalism is assumed. The models are coherent, noninteracting, and small enough to inspect. <a href="https://arxiv.org/abs/2008.01275">Camsari, Chowdhury, and Datta</a> give a complementary introduction from the one-electron Schrödinger equation.</p>
+  <hr>
+  <h2>Five experiments, one argument</h2>
+  <table>
+    <thead><tr><th>Note</th><th>The question</th><th>What to change</th></tr></thead>
+    <tbody>
+      <tr><td><a href="experiments.html#level">1. One level, two doors</a></td><td>Can an arbitrarily weak connection transmit perfectly?</td><td>Level energy and left/right escape widths</td></tr>
+      <tr><td><a href="experiments.html#chain">2. Let the leads continue</a></td><td>What makes a finite chain invisible to an incoming wave?</td><td>Length, contact hopping, and on-site energy</td></tr>
+      <tr><td><a href="experiments.html#fano">3. A detour that stops traffic</a></td><td>How can adding an orbital suppress transmission?</td><td>Side-level energy and coherent coupling</td></tr>
+      <tr><td><a href="experiments.html#bias">4. Who fills the level?</a></td><td>Does a half-full device necessarily carry current?</td><td>Bias, temperature, and coupling asymmetry</td></tr>
+      <tr><td><a href="experiments.html#eta">5. The imaginary-number audit</a></td><td>Is a smoother curve a better calculation?</td><td>Numerical η, window, grid spacing, and grid alignment</td></tr>
+    </tbody>
+  </table>
+  <p>Follow the notes in order the first time. The <a href="docs/notes.html">connected derivation</a> explains scattering, the retarded Green function, lead self-energies, the Caroli formula, and occupations. Optional derivations sit in expandable passages. The <a href="docs/references.html">annotated references</a> point to the original literature and Datta's teaching.</p>
+  <h2>Open, calculate, inspect</h2>
+  <p>Double-click this file. All controls, vector figures, and LaTeX rendering work locally without installation or internet; source links need a connection. Each experiment has examples, a reset, and exports of its SVG figure and numerical record. All energies are in electronvolts; one spin species is counted throughout.</p>
+  <p>The <a href="README.md">README</a> describes the models and reproducibility checks. Inspect the <a href="physics.js">numerical library</a>, <a href="tests/physics.test.js">independent tests</a>, or the <a href="docs/numerical-checks.json">computed numerical checks</a>.</p>
+</main>
+<footer><p><a href="LICENSE">MIT license</a>. Copyright (c) 2026 Neil Yuanting Li. Locally bundled <a href="vendor/katex/LICENSE">KaTeX</a> retains its own license.</p></footer>
+</body>
+</html>

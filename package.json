@@ -1,0 +1,13 @@
+{
+  "name": "quantum-transport-notes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Compact interactive notes on coherent quantum transport",
+  "author": "Neil Yuanting Li",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test tests/physics.test.js",
+    "check:numerics": "node scripts/check-numerics.js"
+  },
+  "engines": { "node": ">=22" }
+}

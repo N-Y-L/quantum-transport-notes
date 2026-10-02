@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From waves to current · Quantum transport notes</title>
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<script defer src="../vendor/katex/katex.min.js"></script>
+<script defer src="../vendor/katex/auto-render.min.js"></script>
+<script defer src="../math.js"></script>
+</head>
+<body>
+<nav aria-label="Main navigation"><a href="../index.html">Home</a> · <a href="../experiments.html">Experiments</a> · <a href="notes.html" aria-current="page">Notes</a> · <a href="references.html">Sources</a></nav>
+<main>
+<h1>From waves to current</h1>
+<p>A perfectly clean wire has resistance. A discrete level acquires a width when connected to a wire. A second level can stop the current altogether. These puzzles share one ingredient: a quantum system exchanges particles with reservoirs.</p>
+<p>We use a static, noninteracting one-electron Hamiltonian in an orthonormal orbital basis. Each channel includes its spin label; the experiments are <strong>spinless, with one channel in each lead</strong>. Independent identical spins would double the current. Energies are in eV; the plots use eV<sup>−1</sup> for densities and μA for currents. The route below follows the physical questions emphasized by <a href="https://arxiv.org/abs/cond-mat/0408319">Datta’s atomistic account of resistance</a>.</p>
+<p><a href="#counting">Count incoming waves</a> → <a href="#resolvent">eliminate the leads</a> → <a href="#caroli">calculate transmission</a> → <a href="#occupation">fill the states</a> → <a href="#eta">check the numerics</a>.</p>
+
+<section id="counting">
+<h2>1. How much current fits in one channel?</h2>
+<p>For a stationary scattering wave, reflection and transmission refer to <em>flux</em>. If incoming and outgoing group velocities differ, an amplitude squared needs their velocity ratio. With flux-normalized channels, the transmission matrix \(t\) gives \(\mathcal T=\operatorname{Tr}(t^\dagger t)\); unitarity puts each transmission eigenvalue between zero and one. This relation does not require time-reversal symmetry. <a href="https://doi.org/10.1103/PhysRevB.23.6851">Fisher &amp; Lee (1981)</a>.</p>
+<p>Take one right-moving branch in a normalization length \(L\). There are \(L\,dk/(2\pi)\) states, each transporting probability past a point at rate \(v/L\). Since \(v=\hbar^{-1}dE/dk\), their product is \(dE/h\): slow states carry less flux but are more numerous. With \(e&gt;0\),</p>
+<div class="equation">\[I=\frac{e}{h}\int dE\,\mathcal T(E)[f_L(E)-f_R(E)],\qquad f_\alpha(E)=\frac{1}{1+e^{(E-\mu_\alpha)/(k_BT)}}.\]</div>
+<p>Here positive \(I\) counts \(e\) times electron flow from left to right; signed electric charge flow in that spatial direction is \(-I\). For \(\mu_L-\mu_R=eV\), zero temperature and small bias give \(I/V=(e^2/h)\mathcal T(\mu)\). Thus a perfectly transmitting spinless channel has a two-terminal resistance \(h/e^2\). Reservoirs can supply only this many occupied incoming states per energy interval; an impurity is unnecessary. Reservoir equilibration supplies the irreversibility absent from the elastic channel. <a href="https://www.cambridge.org/core/books/abs/electronic-transport-in-mesoscopic-systems/conductance-from-transmission/145D7F82230A861B761C59F7723C5EF9">Datta, <cite>Electronic Transport in Mesoscopic Systems</cite>, ch. 2</a>.</p>
+<details><summary>Why “two-terminal” matters</summary>
+<p>The voltage here is the difference between the supplying reservoirs’ electrochemical potentials, divided by \(e\). A voltage probe placed inside a conductor need not measure that same drop. Contact resistance and resistance inferred from internal probes are different experimental quantities; neither should be identified automatically with local dissipation. The present experiments implement the two-reservoir definition.</p>
+</details>
+</section>
+
+<section id="resolvent">
+<h2>2. A Green function is a response to a source</h2>
+<p>Solving \((E-H)\psi=s\) means finding the wave produced by a source \(s\). A boundary condition selects the inverse. For a source that acts before the response,</p>
+<div class="equation">\[G^r(E)=\lim_{\eta\to0^+}\frac{1}{i\hbar}\int_0^\infty dt\,e^{i(E+i\eta)t/\hbar}e^{-iHt/\hbar}=(E+i0^+-H)^{-1}.\]</div>
+<p>The positive infinitesimal makes the integral converge and selects outgoing waves. It is not, by itself, an experimentally measured scattering rate. The one-electron source construction is developed by <a href="https://arxiv.org/html/2008.01275">Camsari, Chowdhury &amp; Datta, §§2–3</a>.</p>
+<p>A finite device need not store an infinite lead. Let \(\tau_\alpha\) map lead orbitals into device orbitals and \(g^r_\alpha\) be the disconnected lead’s Green function. Eliminating the lead amplitudes gives</p>
+<div class="equation">\[\Sigma^r_\alpha=\tau_\alpha g^r_\alpha\tau_\alpha^\dagger,\qquad G^r=[(E+i\eta)\mathbf1-H_D-\Sigma^r_L-\Sigma^r_R]^{-1}.\]</div>
+<p>The self-energy contains excursions out of the device and back. Its Hermitian part shifts energies. Its negative semidefinite imaginary part describes escape into available lead states. In the experiments, the physical lead self-energies are evaluated at \(E+i0^+\); adjustable \(\eta\) is added only inside the finite device.</p>
+<details><summary>Elimination in two lines</summary>
+<p>The block equations are \((z-H_D)\psi_D-\tau\psi_\ell=s_D\) and \((z-H_\ell)\psi_\ell-\tau^\dagger\psi_D=s_\ell\). Substitute \(\psi_\ell=g_\ell(\tau^\dagger\psi_D+s_\ell)\). Then \((z-H_D-\tau g_\ell\tau^\dagger)\psi_D=s_D+\tau g_\ell s_\ell\): the same elimination supplies both the self-energy and the incoming source.</p>
+</details>
+</section>
+
+<section id="spectral">
+<h2>3. Width counts available escape routes</h2>
+<div class="equation">\[\Gamma_\alpha=i(\Sigma^r_\alpha-\Sigma^a_\alpha)=-2\operatorname{Im}\Sigma^r_\alpha,\qquad \Sigma^a_\alpha=(\Sigma^r_\alpha)^\dagger.\]</div>
+<p>For matrices, \(\operatorname{Im}M=(M-M^\dagger)/(2i)\), not entrywise imaginary parts. A passive lead has \(\Gamma_\alpha\succeq0\): no state gains probability by escaping. Indeed \(i(g^r-g^a)=2\pi\delta(E-H_\ell)\), so \(\Gamma=2\pi\tau\delta(E-H_\ell)\tau^\dagger\) is positive. Units: \(\Sigma,\Gamma,\eta\) are energies; \(G\) has inverse-energy units.</p>
+<p>The spectral function \(A=i(G^r-G^a)\), with \(G^a=(G^r)^\dagger\), counts available states. Its diagonal gives local density of states \(\rho_j=A_{jj}/(2\pi)\). It obeys the exact identity</p>
+<div class="equation">\[A=G^r(\Gamma_L+\Gamma_R+2\eta\mathbf1)G^a,\qquad \int_{-\infty}^{\infty}\frac{dE}{2\pi}A(E)=\mathbf1.\]</div>
+<p>The sum rule assumes the complete spectral measure and a causal embedding with the correct high-energy behavior. A finite plotting window may omit substantial weight. A closed level contributes a delta function as \(\eta\to0^+\), not a pointwise finite peak. For spectral functions and contact-resolved states, see <a href="https://courses.ece.ucsb.edu/ECE194/194A_S13Banerjee/References/Datta_NEGF.pdf">Datta (2000), §§3–4</a>.</p>
+<details><summary>Check the sign and the factor of two</summary>
+<p>Use \(G^r-G^a=G^r[(G^a)^{-1}-(G^r)^{-1}]G^a\). The inverse difference is \(-i(\Gamma_L+\Gamma_R+2\eta\mathbf1)\). Multiplication by \(i\) yields the displayed identity. The infinitesimal appears twice because the advanced inverse contains \(-i\eta\).</p>
+</details>
+</section>
+
+<section id="caroli">
+<h2>4. Injection, propagation, collection</h2>
+<p>A reservoir injects incoherent incoming channels, but each injected wave propagates coherently through the device. The matrix \(A_R=G^r\Gamma_R G^a\) records the device weight of states arriving from the right. Contract it with \(\Gamma_L\) to count escape into the left:</p>
+<div class="equation">\[\mathcal T_{L\leftarrow R}=\operatorname{Tr}[\Gamma_LG^r\Gamma_RG^a].\]</div>
+<p>This is the Caroli transmission expression. The order has a physical meaning: \(R\) injects, \(G^r\) propagates, \(L\) collects; \(G^a\) supplies the conjugate amplitude. It is a squared matrix norm and therefore nonnegative. <a href="https://doi.org/10.1088/0022-3719/4/8/018">Caroli et al. (1971)</a>; <a href="https://arxiv.org/html/2008.01275">Camsari, Chowdhury &amp; Datta, §2</a>.</p>
+<p>With only two leads, elastic unitary scattering ensures \(\mathcal T_{L\leftarrow R}=\mathcal T_{R\leftarrow L}\), even at a magnetic field. Cyclically permuting a trace alone does not prove it. Extra absorbing terminals remove that two-terminal argument. In our reciprocal models both directions still agree at finite \(\eta\), although reflection plus transmission can be less than one. <a href="https://doi.org/10.1103/PhysRevB.23.6851">Fisher &amp; Lee</a>.</p>
+</section>
+
+<section id="level">
+<h2>5. A level becomes a resonance</h2>
+<p>For one level at \(\varepsilon_0\), take energy-independent lead self-energies \(\Sigma^r_\alpha=-i\Gamma_\alpha/2\), absorbing constant energy shifts into \(\varepsilon_0\). This is the wide-band approximation. Put \(\Gamma=\Gamma_L+\Gamma_R\) and \(w=\Gamma/2+\eta\):</p>
+<div class="equation">\[G^r=\frac{1}{E-\varepsilon_0+iw},\quad A=\frac{2w}{(E-\varepsilon_0)^2+w^2},\quad \mathcal T=\frac{\Gamma_L\Gamma_R}{(E-\varepsilon_0)^2+w^2}.\]</div>
+<p>At \(\eta=0\), the peak transmission is \(4\Gamma_L\Gamma_R/\Gamma^2\le1\). Equal contacts reach one; a weak exit bottlenecks a strongly coupled entrance. Increasing equal couplings widens the peak without raising its height. Predict this before opening the <a href="../experiments.html#level">resonant-level experiment</a>. The contact-broadened level is a central example in <a href="https://arxiv.org/abs/cond-mat/0408319">Datta (2004), §§3–4</a>.</p>
+<details><summary>Which lifetime?</summary>
+<p>For this single, energy-independent pole, a one-electron state initially localized on the orbital has a return amplitude proportional to \(e^{-i\varepsilon_0t/\hbar}e^{-wt/\hbar}\). Its survival probability decays as \(e^{-2wt/\hbar}\). Consequently</p>
+<div class="equation">\[\tau_{\rm amplitude}=\frac{\hbar}{w},\qquad \tau_{\rm probability}=\frac{\hbar}{2w},\qquad \mathrm{FWHM}=2w.\]</div>
+<p>For physical escape alone, \(\eta=0\): \(\tau_{\rm probability}=\hbar/\Gamma\), while the amplitude time is \(2\hbar/\Gamma\). With \(\hbar\simeq0.658212\ \mathrm{eV\,fs}\), a width of \(0.1\) eV gives a probability time of about \(6.58\) fs. Band edges, energy-dependent self-energies and multiple poles generally spoil a single exponential. A width parameter is then not automatically a unique dwell time. Reservoir injection can maintain a steady occupation; this survival probability is not the occupation under bias.</p>
+</details>
+</section>
+
+<section id="occupation">
+<h2>6. Available states are not occupied states</h2>
+<p>The incoming states from each reservoir retain that reservoir’s Fermi occupation. For a scattering steady state at \(\eta=0\), define</p>
+<div class="equation">\[F(E)=f_LA_L+f_RA_R,\qquad A_\alpha=G^r\Gamma_\alpha G^a,\qquad n_j=\int\frac{dE}{2\pi}F_{jj}(E).\]</div>
+<p>A resonance inside the bias window is partly filled. For a wide-band level its energy-resolved occupation is \((\Gamma_Lf_L+\Gamma_Rf_R)/\Gamma\). The more strongly coupled reservoir has more influence. This does not generally define a local Fermi function or a local temperature. <a href="https://courses.ece.ucsb.edu/ECE194/194A_S13Banerjee/References/Datta_NEGF.pdf">Datta (2000), eqs. (4.1)–(4.4)</a>.</p>
+<p>The <a href="../experiments.html#bias">bias experiment</a> uses \(\mu_{L,R}=\pm eV/2\) and keeps the Hamiltonian and lead spectra fixed. Temperature blurs the occupied energy window; it does not dephase the waves in this model. Real devices may shift their potential under bias, requiring an electrostatic self-consistency calculation. <a href="https://arxiv.org/abs/cond-mat/0408319">Datta (2004), §§5–6</a>.</p>
+<details><summary>States that neither reservoir can fill</summary>
+<p>A bound state with no coupling to any propagating lead state can contribute to \(A\) without appearing in \(A_L+A_R\) after a naive pointwise \(\eta=0\) substitution. Its occupation requires initial-state information or a specified equilibration mechanism. Multiple bound states can also produce persistent oscillations rather than a unique steady state. The scattering-state occupation formula must not silently assign these states zero occupation. <a href="https://arxiv.org/abs/0803.0914">Khosravi et al. (2008)</a>.</p>
+</details>
+</section>
+
+<section id="applications">
+<h2>7. Matching a wire; blocking it with a side branch</h2>
+<p>For a semi-infinite chain with onsite energy zero and hopping \(-t_0\), removing the endpoint leaves the same chain. Thus its surface Green function satisfies \(g^r=[E+i0^+-t_0^2g^r]^{-1}\). Inside the band,</p>
+<div class="equation">\[g^r(E)=\frac{E-i\sqrt{4t_0^2-E^2}}{2t_0^2},\qquad |E|&lt;2t_0,\qquad \Sigma^r=|t_c|^2g^r.\]</div>
+<p>Choose the branch with negative imaginary part and \(g^r\sim1/E\) at large energy. Identical hoppings and onsite energies throughout produce \(\mathcal T=1\) inside the band: the device boundary is only bookkeeping. Contact mismatch reflects waves, and repeated reflections create resonances. Outside the lead band there is no incoming propagating channel. At a band edge, distinguish the limit from inside the band from the zero-velocity threshold itself. <a href="../experiments.html#chain">Try the chain</a>; compare the discrete contact construction in <a href="https://arxiv.org/html/2008.01275">Camsari, Chowdhury &amp; Datta, §4.2</a>.</p>
+<p>Now attach a side level \(\varepsilon_s\), coupled by \(v\), to a wide-band conducting level \(\varepsilon_0\). At \(\eta=0\), direct inversion gives</p>
+<div class="equation">\[G^r_{00}=\frac{E-\varepsilon_s}{(E-\varepsilon_0+i\Gamma/2)(E-\varepsilon_s)-v^2}.\]</div>
+<p>For nonzero \(v\), transmission vanishes at \(E=\varepsilon_s\). The wave that visits the side level cancels the transmitted background. More available states can mean less current! This is a discrete-state/continuum interference mechanism, the setting of <a href="https://doi.org/10.1103/PhysRev.124.1866">Fano’s original analysis</a>. The particular two-orbital formula above follows from this model, not from an assumed asymmetric fit. <a href="../experiments.html#fano">Move the side level</a>. At \(v=0\), the side orbital is isolated; its spectral delta remains, but the transmission zero disappears.</p>
+</section>
+
+<section id="eta">
+<h2>8. A small number can change the experiment</h2>
+<p>A finite device \(\eta\) is mathematically equivalent to adding \(\Sigma^r_\eta=-i\eta\mathbf1\), with \(\Gamma_\eta=2\eta\mathbf1\). If it is only a regulator, demonstrate convergence as it tends to zero. If retained as a physical absorber, it removes probability with time constant \(\hbar/(2\eta)\) for an otherwise isolated orbital. An inelastic environment requires a model of both loss and reinjection; adding an imaginary number does not establish thermalization or particle-conserving dephasing. <a href="https://arxiv.org/abs/0712.3520">Golizadeh-Mojarad &amp; Datta (2007)</a>.</p>
+<details><summary>Where did the missing current go?</summary>
+<p>In the finite-\(\eta\) bias calculation, \(F=f_LA_L+f_RA_R\) deliberately omits injection from the absorber. Define contact currents positive <em>into</em> the device:</p>
+<div class="equation">\[I_\alpha=\frac{e}{h}\int dE\,\operatorname{Tr}\{\Gamma_\alpha[f_\alpha A-F]\}.\]</div>
+<p>The spectral identity gives \(I_L+I_R=(e/h)\int dE\,2\eta\operatorname{Tr}F\): exactly the absorbed current. Even equal reservoirs feed this empty sink. To model a third filled reservoir, add \(f_\eta G^r\Gamma_\eta G^a\) to \(F\) and include its current. A conserving voltage-probe or dephasing model additionally specifies how its distribution is determined. Reporting only the antisymmetric \(L/R\) pair term conceals the sink.</p>
+</details>
+<p>For the resonant level the complete spectral area is one, whereas the two lead contributions integrate to \(\Gamma/(\Gamma+2\eta)\). Algebraic current balance can hold on an unresolved grid, so it does not by itself establish convergence. A normalized spectral plot therefore does <em>not</em> prove current conservation. The <a href="../experiments.html#eta">numerical experiment</a> separates three errors:</p>
+<ol>
+<li><strong>Model change:</strong> reduce \(\eta\) relative to the narrowest physical width; watch transmission and absorbed flux stabilize.</li>
+<li><strong>Quadrature error:</strong> refine the energy spacing and shift the sampling grid. A narrow peak between samples can disappear; a sample exactly on it can exaggerate its area.</li>
+<li><strong>Window error:</strong> extend both energy limits. A finer grid cannot recover tails outside its window.</li>
+</ol>
+<p>For a Lorentzian over \([a,b]\), the exact area is \(\{\arctan[(b-\varepsilon_0)/w]-\arctan[(a-\varepsilon_0)/w]\}/\pi\). Compare the numerical area to this value first, then to one. Resolve every finite-width feature before reducing the regulator further. For a discrete spectrum, take the distributional limit only after integration; setting \(\eta=0\) pointwise loses delta functions.</p>
+</section>
+
+<section id="next">
+<h2>9. What would you measure next?</h2>
+<p>Average current counts transmissions. Partition noise tests their fluctuations: a channel with probability \(\mathcal T\) produces a factor \(\mathcal T(1-\mathcal T)\) at zero temperature. A perfectly open channel has no partition noise. <a href="https://doi.org/10.1103/PhysRevB.46.12485">Büttiker (1992)</a>. Interferometers add controllable phases; correlations can reveal information absent from the mean current.</p>
+<p>Strong Coulomb effects, fractionalized excitations and superconducting conversion require additional physics. The elementary one-electron Caroli calculation here does not establish them. A useful next step is the interacting-current formulation of <a href="https://doi.org/10.1103/PhysRevLett.68.2512">Meir &amp; Wingreen (1992)</a>: ask which quantities describing occupation must be supplied once independent-electron scattering is insufficient.</p>
+</section>
+<p><a href="../experiments.html">Return to the experiments</a> · <a href="references.html">Annotated sources</a></p>
+</main>
+<footer><p>Copyright (c) 2026 Neil Yuanting Li. Original text and code: <a href="../LICENSE">MIT License</a>.</p></footer>
+</body>
+</html>

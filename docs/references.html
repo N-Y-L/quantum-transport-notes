@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Annotated sources · Quantum transport notes</title>
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<script defer src="../vendor/katex/katex.min.js"></script>
+<script defer src="../vendor/katex/auto-render.min.js"></script>
+<script defer src="../math.js"></script>
+</head>
+<body>
+<nav aria-label="Main navigation"><a href="../index.html">Home</a> · <a href="../experiments.html">Experiments</a> · <a href="notes.html">Notes</a> · <a href="references.html" aria-current="page">Sources</a></nav>
+<main>
+<h1>Annotated sources</h1>
+<p>Start with Datta’s single-level picture, then connect it to scattering waves and matrices. These are sources for the physics; the notes’ derivations, illustrations and numerical experiments use the explicitly stated models. Publisher links sometimes require library access. The arXiv and university links offer accessible reading.</p>
+<h2>A short reading route</h2>
+<ol>
+<li id="datta2004"><p><strong>S. Datta, <cite>Electrical resistance: an atomistic view</cite> (2004).</strong> <a href="https://arxiv.org/abs/cond-mat/0408319">Author’s tutorial on arXiv</a>. Read §§2–4 for levels, contact broadening and conductance; §§5–6 for the electrostatic potential under bias; §8 for the matrix formulation. This is the most direct companion to the resonant-level experiment.</p></li>
+<li id="datta1995"><p><strong>S. Datta, <cite>Electronic Transport in Mesoscopic Systems</cite> (Cambridge University Press, 1995).</strong> <a href="https://www.cambridge.org/core/books/electronic-transport-in-mesoscopic-systems/1E55DEF5978AA7B843FF70337C220D8B">Publisher’s book page</a>. <a href="https://doi.org/10.1017/CBO9780511805776.003">Chapter 2</a> establishes conductance from transmission and the measurement meaning of contact resistance; <a href="https://doi.org/10.1017/CBO9780511805776.004">chapter 3</a> connects scattering matrices, Green functions and tight-binding models. Chapter 8 treats occupations and interactions.</p></li>
+<li id="datta2000"><p><strong>S. Datta, “Nanoscale device modeling: the Green’s function method,” <cite>Superlattices and Microstructures</cite> <b>28</b>, 253–278 (2000).</strong> <a href="https://doi.org/10.1006/spmi.2000.0920">Publisher record</a> · <a href="https://courses.ece.ucsb.edu/ECE194/194A_S13Banerjee/References/Datta_NEGF.pdf">University-hosted paper</a>. Sections 3–4 connect spectral functions to density, split states by supplying contact, and make the need for electrostatics concrete. Useful when \(A\) and occupied spectral weight start to look deceptively similar.</p></li>
+<li id="camsari"><p><strong>K. Y. Camsari, S. Chowdhury and S. Datta, <cite>The Non-Equilibrium Green Function (NEGF) Method</cite>, arXiv:2008.01275 (2020; revised 2021).</strong> <a href="https://arxiv.org/html/2008.01275">Full text</a> · <a href="https://arxiv.org/abs/2008.01275">Version record</a>. Sections 2–3 develop the transport equations from one-electron wave dynamics with injection and escape. Section 4 supplies a discrete example. The treatment distinguishes escape self-energies from source correlations.</p></li>
+</ol>
+<h2>Original results and carefully chosen extensions</h2>
+<ul>
+<li id="caroli"><p><strong>C. Caroli, R. Combescot, P. Nozières and D. Saint-James, “Direct calculation of the tunneling current,” <cite>Journal of Physics C: Solid State Physics</cite> <b>4</b>, 916–929 (1971).</strong> <a href="https://doi.org/10.1088/0022-3719/4/8/018">Original paper</a>. Historical foundation for calculating current through coupled regions with Green functions. For the compact modern trace expression and our conventions, use the derivation in the notes alongside Camsari et al.</p></li>
+<li id="fisherlee"><p><strong>D. S. Fisher and P. A. Lee, “Relation between conductivity and transmission matrix,” <cite>Physical Review B</cite> <b>23</b>, 6851–6854 (1981).</strong> <a href="https://doi.org/10.1103/PhysRevB.23.6851">Original paper</a>. Relates conductance to the transmission matrix for multiple channels, including systems without time-reversal symmetry. Supports the scattering interpretation and the need to specify which conductance a measurement means.</p></li>
+<li id="fano"><p><strong>U. Fano, “Effects of Configuration Interaction on Intensities and Phase Shifts,” <cite>Physical Review</cite> <b>124</b>, 1866–1878 (1961).</strong> <a href="https://doi.org/10.1103/PhysRev.124.1866">Original paper</a>. Discrete-state/continuum interference and the resulting resonance line shape. Its physical setting is atomic excitation; our side-dot transmission example is a separate two-orbital realization of the interference mechanism.</p></li>
+<li id="sidedot"><p><strong>K. Kobayashi, H. Aikawa, A. Sano, S. Katsumoto and Y. Iye, “Fano resonance in a quantum wire with a side-coupled quantum dot,” <cite>Physical Review B</cite> <b>70</b>, 035319 (2004).</strong> <a href="https://doi.org/10.1103/PhysRevB.70.035319">Published paper</a> · <a href="https://arxiv.org/abs/cond-mat/0311497">Author manuscript</a>. An experimental realization of side-coupled transport interference. The measured device is richer than the two-orbital model; the paper helps separate thermal averaging from loss of coherence.</p></li>
+<li id="dephasing"><p><strong>R. Golizadeh-Mojarad and S. Datta, <cite>Non-equilibrium Green’s function based model for dephasing in quantum transport</cite> (2007 preprint).</strong> <a href="https://arxiv.org/abs/0712.3520">Author manuscript</a>. A concrete model of dephasing, with momentum-relaxing and momentum-conserving cases. It is useful for understanding why a scalar absorbing potential alone is insufficient to specify a conserving dephasing process.</p></li>
+<li id="boundstates"><p><strong>E. Khosravi, G. Stefanucci, S. Kurth and E. K. U. Gross, <cite>Bound States in Time-Dependent Quantum Transport: Oscillations and Memory Effects in Current and Density</cite> (2008).</strong> <a href="https://arxiv.org/abs/0803.0914">Author manuscript</a>. Examines persistent oscillations and history-dependent density when bound states exist. This is the reason for the bound-state qualification on the two-reservoir steady-state occupation formula.</p></li>
+<li id="noise"><p><strong>M. Büttiker, “Scattering theory of current and intensity noise correlations in conductors and wave guides,” <cite>Physical Review B</cite> <b>46</b>, 12485–12507 (1992).</strong> <a href="https://doi.org/10.1103/PhysRevB.46.12485">Original paper</a>. Separates incident thermal fluctuations from partition noise and shows how correlations probe transmission and exchange. A natural next measurement after mean current.</p></li>
+<li id="interactions"><p><strong>Y. Meir and N. S. Wingreen, “Landauer formula for the current through an interacting electron region,” <cite>Physical Review Letters</cite> <b>68</b>, 2512–2515 (1992).</strong> <a href="https://doi.org/10.1103/PhysRevLett.68.2512">Original paper</a>. Extends the current calculation to an interacting central region. Read it to locate the extra information needed beyond the independent-electron model; replacing a level width by a phenomenological number is not that extension.</p></li>
+</ul>
+<p><a href="notes.html">Return to the notes</a> · <a href="../experiments.html">Try the calculations</a></p>
+</main>
+<footer><p>Copyright (c) 2026 Neil Yuanting Li. Original text and code: <a href="../LICENSE">MIT License</a>.</p></footer>
+</body>
+</html>

@@ -1,0 +1,597 @@
+{
+  "formatVersion": 1,
+  "runtime": {
+    "node": "v24.18.1"
+  },
+  "conventions": {
+    "energies": "eV",
+    "currents": "microampere per spin",
+    "lifetime": "femtosecond; single wide-band pole, one-electron probability survival time ℏ/(Γ+2η); maintained occupation determined separately",
+    "hopping": "H[n,n+1] = -t",
+    "bias": "muL = bias/2; muR = -bias/2",
+    "current": "IL and IR enter device; Isink leaves device",
+    "eta": "Finite eta is implemented as an empty absorbing channel of width 2 eta for current balance.",
+    "integration": "Composite trapezoid. Zero-temperature bias integration inserts exact chemical-potential breakpoints and uses one-sided occupations on each segment. Spectral-grid diagnostics retain the specified uniform grid.",
+    "randomness": "none"
+  },
+  "independentReferences": {
+    "scattering": "Outgoing-wave recurrence of the discrete Schrodinger equation, resolved into incident and reflected lead waves.",
+    "integration": "Closed-form arctangent integrals of a Lorentzian, with the same finite energy window as the numerical integral.",
+    "currentMicroampPerEV": 38.7404586493
+  },
+  "matchedChain": {
+    "energies": [
+      -1.8,
+      -1.1,
+      -0.3,
+      0,
+      0.47,
+      1.2,
+      1.8
+    ],
+    "hopping": 1,
+    "contact": 1,
+    "onsite": 0,
+    "eta": 0,
+    "rows": [
+      {
+        "sites": 1,
+        "maximumTransmissionError": 2.22044604925e-16,
+        "maximumConservationError": 2.22044604925e-16
+      },
+      {
+        "sites": 2,
+        "maximumTransmissionError": 3.33066907388e-16,
+        "maximumConservationError": 3.33066907388e-16
+      },
+      {
+        "sites": 5,
+        "maximumTransmissionError": 6.66133814775e-16,
+        "maximumConservationError": 6.66133814775e-16
+      },
+      {
+        "sites": 9,
+        "maximumTransmissionError": 1.33226762955e-15,
+        "maximumConservationError": 1.33226762955e-15
+      }
+    ]
+  },
+  "mismatchedChain": {
+    "energies": [
+      -1.8,
+      -1.1,
+      -0.3,
+      0,
+      0.47,
+      1.2,
+      1.8
+    ],
+    "eta": 0,
+    "rows": [
+      {
+        "parameters": {
+          "sites": 3,
+          "hopping": 0.83,
+          "contact": 0.57,
+          "onsite": 0.21,
+          "leadHopping": 1,
+          "leadOnsite": 0
+        },
+        "maximumTransmissionError": 5.55111512313e-16,
+        "maximumReflectionError": 6.66133814775e-16
+      },
+      {
+        "parameters": {
+          "sites": 7,
+          "hopping": 1.17,
+          "contact": 0.76,
+          "onsite": -0.14,
+          "leadHopping": 1,
+          "leadOnsite": 0
+        },
+        "maximumTransmissionError": 8.881784197e-16,
+        "maximumReflectionError": 1.66533453694e-16
+      }
+    ]
+  },
+  "zeroTemperatureBias": [
+    {
+      "parameters": {
+        "epsilon": 0.13,
+        "gammaL": 0.18,
+        "gammaR": 0.32,
+        "bias": 0.4,
+        "kT": 0,
+        "eta": 0,
+        "limit": 10,
+        "intervals": 40000
+      },
+      "integration": {
+        "scheme": "trapezoids split at chemical potentials",
+        "nominalStep": 0.0005,
+        "actualIntervals": 40002,
+        "insertedBreakpoints": 2,
+        "samples": 40003
+      },
+      "numerical": {
+        "I": 10.6705527904,
+        "IL": 10.6705527904,
+        "IR": -10.6705527904,
+        "Isink": 0,
+        "n": 0.335507576843,
+        "spectralArea": 0.984085133357
+      },
+      "exact": {
+        "I": 10.6705552673,
+        "IL": 10.6705552673,
+        "IR": -10.6705552673,
+        "Isink": 0,
+        "n": 0.335507571402,
+        "spectralArea": 0.984085133363
+      },
+      "currentErrorMicroamp": -0.00000247691315636,
+      "occupationError": 5.44047790152e-9,
+      "conservationResidualMicroamp": 0
+    },
+    {
+      "parameters": {
+        "epsilon": 0.13,
+        "gammaL": 0.18,
+        "gammaR": 0.32,
+        "bias": 0.4,
+        "kT": 0,
+        "eta": 0.03,
+        "limit": 10,
+        "intervals": 40000
+      },
+      "integration": {
+        "scheme": "trapezoids split at chemical potentials",
+        "nominalStep": 0.0005,
+        "actualIntervals": 40002,
+        "insertedBreakpoints": 2,
+        "samples": 40003
+      },
+      "numerical": {
+        "I": 8.86332886896,
+        "IL": 11.5353033183,
+        "IR": -7.06759502643,
+        "Isink": 4.46770829189,
+        "n": 0.305906660085,
+        "spectralArea": 0.982176294261
+      },
+      "exact": {
+        "I": 8.86333068137,
+        "IL": 11.5353053066,
+        "IR": -7.06759713038,
+        "Isink": 4.46770817619,
+        "n": 0.305906652168,
+        "spectralArea": 0.982176294269
+      },
+      "currentErrorMicroamp": -0.00000181241376573,
+      "occupationError": 7.91674986678e-9,
+      "conservationResidualMicroamp": -8.881784197e-16
+    }
+  ],
+  "etaConvergence": {
+    "epsilon": 0.13,
+    "gammaL": 0.2,
+    "gammaR": 0.2,
+    "evaluationEnergy": 0.13,
+    "rows": [
+      {
+        "eta": 0.1,
+        "T": 0.444444444444,
+        "R": 0.111111111111,
+        "loss": 0.444444444444,
+        "totalSpectralFunction": 6.66666666667,
+        "spectralFunctionFromPhysicalLeads": 4.44444444444,
+        "missingSpectralFunctionWithoutEtaTerm": 2.22222222222,
+        "probabilityLifetimeFemtoseconds": 1.09701992817
+      },
+      {
+        "eta": 0.03,
+        "T": 0.756143667297,
+        "R": 0.0170132325142,
+        "loss": 0.226843100189,
+        "totalSpectralFunction": 8.69565217391,
+        "spectralFunctionFromPhysicalLeads": 7.56143667297,
+        "missingSpectralFunctionWithoutEtaTerm": 1.13421550095,
+        "probabilityLifetimeFemtoseconds": 1.43089555848
+      },
+      {
+        "eta": 0.01,
+        "T": 0.907029478458,
+        "R": 0.00226757369615,
+        "loss": 0.0907029478458,
+        "totalSpectralFunction": 9.52380952381,
+        "spectralFunctionFromPhysicalLeads": 9.07029478458,
+        "missingSpectralFunctionWithoutEtaTerm": 0.453514739229,
+        "probabilityLifetimeFemtoseconds": 1.56717132595
+      },
+      {
+        "eta": 0.003,
+        "T": 0.970661748647,
+        "R": 0.000218398893446,
+        "loss": 0.0291198524594,
+        "totalSpectralFunction": 9.85221674877,
+        "spectralFunctionFromPhysicalLeads": 9.70661748647,
+        "missingSpectralFunctionWithoutEtaTerm": 0.145599262297,
+        "probabilityLifetimeFemtoseconds": 1.6212117165
+      },
+      {
+        "eta": 0.001,
+        "T": 0.990074503106,
+        "R": 0.0000247518625777,
+        "loss": 0.00990074503106,
+        "totalSpectralFunction": 9.95024875622,
+        "spectralFunctionFromPhysicalLeads": 9.90074503106,
+        "missingSpectralFunctionWithoutEtaTerm": 0.0495037251553,
+        "probabilityLifetimeFemtoseconds": 1.63734317637
+      },
+      {
+        "eta": 0,
+        "T": 1,
+        "R": 0,
+        "loss": 0,
+        "totalSpectralFunction": 10,
+        "spectralFunctionFromPhysicalLeads": 10,
+        "missingSpectralFunctionWithoutEtaTerm": 0,
+        "probabilityLifetimeFemtoseconds": 1.64552989225
+      }
+    ]
+  },
+  "spectralGrid": {
+    "epsilon": 0,
+    "gammaL": 0,
+    "gammaR": 0,
+    "interpretation": "Compare sampled area with exact finite-window area, not with one alone. Grid error and omitted tails are distinct.",
+    "rows": [
+      {
+        "eta": 0.003,
+        "intervals": 100,
+        "gridStep": 0.04,
+        "fractionOfStep": 0,
+        "lower": -2,
+        "upper": 2,
+        "sampledArea": 4.32142748413,
+        "exactFiniteWindowArea": 0.999045071058,
+        "quadratureError": 3.32238241307,
+        "missingTail": 0.000954928942355
+      },
+      {
+        "eta": 0.003,
+        "intervals": 100,
+        "gridStep": 0.04,
+        "fractionOfStep": 0.5,
+        "lower": -1.98,
+        "upper": 2.02,
+        "sampledArea": 0.230398801847,
+        "exactFiniteWindowArea": 0.999044975556,
+        "quadratureError": -0.768646173708,
+        "missingTail": 0.000955024444441
+      },
+      {
+        "eta": 0.003,
+        "intervals": 400,
+        "gridStep": 0.01,
+        "fractionOfStep": 0,
+        "lower": -2,
+        "upper": 2,
+        "sampledArea": 1.35707904761,
+        "exactFiniteWindowArea": 0.999045071058,
+        "quadratureError": 0.358033976553,
+        "missingTail": 0.000954928942355
+      },
+      {
+        "eta": 0.003,
+        "intervals": 400,
+        "gridStep": 0.01,
+        "fractionOfStep": 0.5,
+        "lower": -1.995,
+        "upper": 2.005,
+        "sampledArea": 0.735403660627,
+        "exactFiniteWindowArea": 0.999045065089,
+        "quadratureError": -0.263641404463,
+        "missingTail": 0.000954934910676
+      },
+      {
+        "eta": 0.003,
+        "intervals": 1600,
+        "gridStep": 0.0025,
+        "fractionOfStep": 0,
+        "lower": -2,
+        "upper": 2,
+        "sampledArea": 1.00010862012,
+        "exactFiniteWindowArea": 0.999045071058,
+        "quadratureError": 0.00106354906546,
+        "missingTail": 0.000954928942355
+      },
+      {
+        "eta": 0.003,
+        "intervals": 1600,
+        "gridStep": 0.0025,
+        "fractionOfStep": 0.5,
+        "lower": -1.99875,
+        "upper": 2.00125,
+        "sampledArea": 0.997982651057,
+        "exactFiniteWindowArea": 0.999045070685,
+        "quadratureError": -0.0010624196274,
+        "missingTail": 0.000954929315373
+      },
+      {
+        "eta": 0.003,
+        "intervals": 6400,
+        "gridStep": 0.000625,
+        "fractionOfStep": 0,
+        "lower": -2,
+        "upper": 2,
+        "sampledArea": 0.999045071042,
+        "exactFiniteWindowArea": 0.999045071058,
+        "quadratureError": -1.53788093371e-11,
+        "missingTail": 0.000954928942355
+      },
+      {
+        "eta": 0.003,
+        "intervals": 6400,
+        "gridStep": 0.000625,
+        "fractionOfStep": 0.5,
+        "lower": -1.9996875,
+        "upper": 2.0003125,
+        "sampledArea": 0.999045071019,
+        "exactFiniteWindowArea": 0.999045071034,
+        "quadratureError": -1.56977764121e-11,
+        "missingTail": 0.000954928965669
+      }
+    ]
+  },
+  "spectralWindow": {
+    "epsilon": 0.07,
+    "gammaL": 0.1,
+    "gammaR": 0.1,
+    "eta": 0.03,
+    "gridStep": 0.002,
+    "rows": [
+      {
+        "limit": 0.5,
+        "intervals": 500,
+        "sampledArea": 0.835171158842,
+        "exactFiniteWindowArea": 0.835171584729,
+        "quadratureError": -4.25886866551e-7,
+        "missingTail": 0.164828415271
+      },
+      {
+        "limit": 2,
+        "intervals": 2000,
+        "sampledArea": 0.95862751177,
+        "exactFiniteWindowArea": 0.958627518659,
+        "quadratureError": -6.88858448061e-9,
+        "missingTail": 0.0413724813415
+      },
+      {
+        "limit": 10,
+        "intervals": 10000,
+        "sampledArea": 0.991724003665,
+        "exactFiniteWindowArea": 0.99172400372,
+        "quadratureError": -5.51713119634e-11,
+        "missingTail": 0.00827599627978
+      },
+      {
+        "limit": 100,
+        "intervals": 100000,
+        "sampledArea": 0.999172394357,
+        "exactFiniteWindowArea": 0.999172394357,
+        "quadratureError": -4.39648317752e-14,
+        "missingTail": 0.000827605643386
+      }
+    ]
+  },
+  "chainPlotSampling": {
+    "interpolation": "Piecewise linear between samples; do not cross band-edge path breaks.",
+    "reference": "Independent outgoing-wave recurrence on a dense uniform mesh, with separately refined local maxima and half-height flanks.",
+    "rows": [
+      {
+        "parameters": {
+          "sites": 9,
+          "hopping": 1,
+          "contact": 0.15,
+          "onsite": 0
+        },
+        "plotSamples": 1063,
+        "referenceScan": {
+          "lower": -1.99999,
+          "upper": 1.99999,
+          "intervals": 80000,
+          "step": 0.00004999975,
+          "localPeakStep": 1.24999375e-7
+        },
+        "sampledMaximumInterpolationError": 0.000501691884858,
+        "worstEnergy": 1.9070904645,
+        "maximumLibraryReferenceDifference": 1.27231558622e-13,
+        "peaks": [
+          {
+            "energy": -1.90294073525,
+            "transmission": 0.999999999999,
+            "halfMaximumWidth": 0.000544598241892,
+            "plottedPeak": 0.999999969883,
+            "maximumLocalInterpolationError": 0.000450775871596
+          },
+          {
+            "energy": -1.62055964716,
+            "transmission": 0.999999998893,
+            "halfMaximumWidth": 0.00372709354643,
+            "plottedPeak": 0.999998704033,
+            "maximumLocalInterpolationError": 0.000321516835298
+          },
+          {
+            "energy": -1.17901085492,
+            "transmission": 0.999999999993,
+            "halfMaximumWidth": 0.00965265623438,
+            "plottedPeak": 0.999999939281,
+            "maximumLocalInterpolationError": 0.000385218224861
+          },
+          {
+            "energy": -0.62051289742,
+            "transmission": 0.999999999985,
+            "halfMaximumWidth": 0.0155973254049,
+            "plottedPeak": 0.999999863074,
+            "maximumLocalInterpolationError": 0.000343089348022
+          },
+          {
+            "energy": 0,
+            "transmission": 1,
+            "halfMaximumWidth": 0.0180944245992,
+            "plottedPeak": 1,
+            "maximumLocalInterpolationError": 0.000230766071013
+          },
+          {
+            "energy": 0.62051289742,
+            "transmission": 0.999999999985,
+            "halfMaximumWidth": 0.0155973254049,
+            "plottedPeak": 0.999999863074,
+            "maximumLocalInterpolationError": 0.000343089348022
+          },
+          {
+            "energy": 1.17901085492,
+            "transmission": 0.999999999993,
+            "halfMaximumWidth": 0.00965265623438,
+            "plottedPeak": 0.999999939281,
+            "maximumLocalInterpolationError": 0.000385218224861
+          },
+          {
+            "energy": 1.62055964716,
+            "transmission": 0.999999998893,
+            "halfMaximumWidth": 0.00372709354643,
+            "plottedPeak": 0.999998704033,
+            "maximumLocalInterpolationError": 0.000321516835304
+          },
+          {
+            "energy": 1.90294073525,
+            "transmission": 0.999999999999,
+            "halfMaximumWidth": 0.000544598241892,
+            "plottedPeak": 0.999999969883,
+            "maximumLocalInterpolationError": 0.000450775871448
+          }
+        ]
+      },
+      {
+        "parameters": {
+          "sites": 9,
+          "hopping": 0.4,
+          "contact": 0.15,
+          "onsite": 1.5
+        },
+        "plotSamples": 860,
+        "referenceScan": {
+          "lower": -1.99999,
+          "upper": 1.99999,
+          "intervals": 80000,
+          "step": 0.00004999975,
+          "localPeakStep": 1.24999375e-7
+        },
+        "sampledMaximumInterpolationError": 0.00049836101448,
+        "worstEnergy": 1.71399143,
+        "maximumLibraryReferenceDifference": 5.07371922254e-14,
+        "peaks": [
+          {
+            "energy": 0.739506052451,
+            "transmission": 0.999999997992,
+            "halfMaximumWidth": 0.00155358572015,
+            "plottedPeak": 0.999998243794,
+            "maximumLocalInterpolationError": 0.000428466101886
+          },
+          {
+            "energy": 0.854207853939,
+            "transmission": 0.999999999998,
+            "halfMaximumWidth": 0.00548399835341,
+            "plottedPeak": 0.999999953955,
+            "maximumLocalInterpolationError": 0.000212235456122
+          },
+          {
+            "energy": 1.03291846038,
+            "transmission": 0.999999999997,
+            "halfMaximumWidth": 0.00989356098523,
+            "plottedPeak": 0.999999950099,
+            "maximumLocalInterpolationError": 0.000403089115209
+          },
+          {
+            "energy": 1.25795696018,
+            "transmission": 0.999999999948,
+            "halfMaximumWidth": 0.0125368385875,
+            "plottedPeak": 0.99999971425,
+            "maximumLocalInterpolationError": 0.000381655758179
+          },
+          {
+            "energy": 1.50678596603,
+            "transmission": 0.999999999957,
+            "halfMaximumWidth": 0.0119028004658,
+            "plottedPeak": 0.999999764276,
+            "maximumLocalInterpolationError": 0.000444383692329
+          },
+          {
+            "energy": 1.75439910296,
+            "transmission": 0.999999999992,
+            "halfMaximumWidth": 0.00802055336871,
+            "plottedPeak": 0.99999991104,
+            "maximumLocalInterpolationError": 0.000309770928649
+          },
+          {
+            "energy": 1.97617799406,
+            "transmission": 0.999999998182,
+            "halfMaximumWidth": 0.00190370723405,
+            "plottedPeak": 0.999998415111,
+            "maximumLocalInterpolationError": 0.000365639605483
+          }
+        ]
+      },
+      {
+        "parameters": {
+          "sites": 9,
+          "hopping": 1.4,
+          "contact": 1.4,
+          "onsite": -1.5
+        },
+        "plotSamples": 297,
+        "referenceScan": {
+          "lower": -1.99999,
+          "upper": 1.99999,
+          "intervals": 80000,
+          "step": 0.00004999975,
+          "localPeakStep": 1.24999375e-7
+        },
+        "sampledMaximumInterpolationError": 0.000495371604092,
+        "worstEnergy": -1.72874135625,
+        "maximumLibraryReferenceDifference": 3.44169137634e-15,
+        "peaks": [
+          {
+            "energy": -1.15167911658,
+            "transmission": 1,
+            "halfMaximumWidth": 2.62176911379,
+            "plottedPeak": 0.999999993685,
+            "maximumLocalInterpolationError": 0.000392845051862
+          },
+          {
+            "energy": -0.229807225958,
+            "transmission": 1,
+            "halfMaximumWidth": 2.62176911379,
+            "plottedPeak": 0.999999999517,
+            "maximumLocalInterpolationError": 0.000351030393689
+          },
+          {
+            "energy": 0.555012724923,
+            "transmission": 1,
+            "halfMaximumWidth": 2.2976979498,
+            "plottedPeak": 0.999999997908,
+            "maximumLocalInterpolationError": 0.000362114658047
+          },
+          {
+            "energy": 1.0992538787,
+            "transmission": 1,
+            "halfMaximumWidth": 0.22789211889,
+            "plottedPeak": 0.999999985059,
+            "maximumLocalInterpolationError": 0.000313870493858
+          }
+        ]
+      }
+    ]
+  }
+}
