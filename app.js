@@ -154,7 +154,7 @@
   }
   function readout(group,paragraphs) { $(group+'-readout').innerHTML=paragraphs.map(s=>'<p>'+s+'</p>').join(''); }
   function record(group,parameters,results,curves) {
-    records[group]={format:'quantum-transport-notes/1',version:'1.3.1',experiment:group,
+    records[group]={format:'quantum-transport-notes/1',version:'1.3.2',experiment:group,
       units:{energy:'eV',current:'microampere',time:'fs',spectralDensity:'1/eV'},
       conventions:{spinSpecies:1,retardedSign:'E + i eta',leadEta:0,leadCurrent:'positive entering device',model:'noninteracting, coherent, elastic; finite eta interpreted as empty absorber'},
       parameters,results,curves};

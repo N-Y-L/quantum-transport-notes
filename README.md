@@ -12,7 +12,7 @@ adjustable SVG figures.
 [Source repository](https://github.com/N-Y-L/quantum-transport-notes)
 
 **For a downloaded copy, open `index.html` in a browser.** No installation, server, account, build step, or
-internet connection is needed for the calculations. External references need a
+internet connection is needed for the calculations. External references and the companion anyon site need a
 connection. Equations, controls, and readouts use LaTeX rendered by bundled KaTeX.
 Figure labels are rendered from TeX into self-contained SVG paths by bundled
 MathJax; exported figures retain their TeX source in `data-tex` attributes.
@@ -28,12 +28,20 @@ MathJax; exported figures retain their TeX source in `data-tex` attributes.
 Read the [connected derivation](docs/notes.html#contents) for the retarded resolvent,
 lead elimination, $\Gamma$, the Caroli trace, occupations, and lifetime conventions.
 [Annotated references](docs/references.html) identify primary papers and Datta's
-teaching. Use the derivation's contents list to jump to a topic, or the reading links below each experiment to move backward, continue, or open its derivation. Each experiment has a prediction question, an expandable explanation, reset and example buttons. “Save figure” exports
+teaching. Use the derivation's contents list to jump to a topic, or the reading links below each experiment to move backward, continue, or open its derivation. Each experiment has a worked explanation visible by default, optional controls, reset and example buttons. “Save figure” exports
 the plotted SVG, with the probe or grid settings in its caption; “Save calculation” exports model parameters, units, results,
 and curve samples as JSON. A persistent download link permits another attempt; changing parameters clears
 the previous snapshot.
 The export source is also available in an expandable text panel for inspection or copying.
 These exports are records, not importable sessions. Printing omits controls, navigation, and raw export previews.
+
+For the accompanying anyon material, start with the
+[anyon notes](https://n-y-l.github.io/anyon-playground/docs/notes.html).
+This transport course is not a prerequisite. At the collider section, two optional
+detours here cover [channel current](docs/notes.html#counting) and
+[one-particle side-orbital interference](docs/notes.html#side-orbital), each with a
+return link. One-particle transmission does not determine fractional exchange
+statistics or a two-particle coincidence probability.
 
 ## Models and conventions
 

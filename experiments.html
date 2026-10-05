@@ -4,24 +4,24 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Five quantum-transport experiments</title>
   <meta name="description" content="Five browser experiments on resonant transmission, finite chains, Fano interference, reservoir filling, and numerical broadening.">
-  <link rel="stylesheet" href="styles.css?v=1.3.1"><link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="styles.css?v=1.3.2"><link rel="stylesheet" href="vendor/katex/katex.min.css">
   <script defer src="vendor/katex/katex.min.js"></script><script defer src="vendor/katex/auto-render.min.js"></script>
-  <script defer src="math.js?v=1.3.1"></script><script defer src="physics.js?v=1.3.1"></script><script defer src="sampling.js?v=1.3.1"></script>
-  <script defer src="svg-math.js?v=1.3.1"></script><script defer src="vendor/mathjax/tex-svg.js"></script><script defer src="app.js?v=1.3.1"></script>
+  <script defer src="math.js?v=1.3.2"></script><script defer src="physics.js?v=1.3.2"></script><script defer src="sampling.js?v=1.3.2"></script>
+  <script defer src="svg-math.js?v=1.3.2"></script><script defer src="vendor/mathjax/tex-svg.js"></script><script defer src="app.js?v=1.3.2"></script>
 </head>
 <body>
 <a class="skip-link" href="#level">Skip to experiments</a>
 <nav id="experiment-contents" aria-label="Main navigation"><a href="index.html">Home</a><a href="docs/notes.html#contents">Connected derivation</a><a href="docs/references.html">Sources</a><a href="#level">Level</a><a href="#chain">Chain</a><a href="#fano">Interference</a><a href="#bias">Bias</a><a href="#eta" aria-label="Eta audit">\(\eta\) audit</a></nav>
 <main>
 <h1>Five small transport experiments</h1>
-<p>Make a prediction before touching a control. Each curve is calculated in your browser from the displayed model. Energies and hopping amplitudes are in \(\mathrm{eV}\). We count <strong>one spin species</strong>; two identical, independent spin species double current and conductance, not transmission per channel.</p>
+<p>Read each model and its worked explanation alongside the default figure. The optional controls recalculate each curve in your browser. Energies and hopping amplitudes are in \(\mathrm{eV}\). We count <strong>one spin species</strong>; two identical, independent spin species double current and conductance, not transmission per channel.</p>
 <p class="small">The highlighted example matches the current settings. When a slider has keyboard focus, use the arrow keys to adjust it.</p>
 <noscript><p class="warning">JavaScript is required for the numerical experiments. The <a href="docs/notes.html">connected notes</a> remain readable.</p></noscript>
 <p id="app-error" class="warning" hidden></p>
 
 <section class="note" id="level">
 <h2>1. One level, two doors</h2>
-<p>A single orbital of energy \(\varepsilon_0\) is coupled to two electron reservoirs, labeled \(L\) and \(R\), through conducting leads. A reservoir maintains the supply of occupied incoming states and absorbs outgoing waves. An incoming electron of energy \(E\) can reflect or pass through the orbital. <strong>Predict:</strong> if both couplings become weak by the same factor, does the peak transmission shrink, or only become harder to hit?</p>
+<p>A single orbital of energy \(\varepsilon_0\) is coupled to two electron reservoirs, labeled \(L\) and \(R\), through conducting leads. A reservoir maintains the supply of occupied incoming states and absorbs outgoing waves. An incoming electron of energy \(E\) can reflect or pass through the orbital. Weakening both contacts equally narrows the resonance without lowering its peak.</p>
 <p>Eliminating the lead amplitudes adds a <dfn>self-energy</dfn> \(\Sigma_\alpha^r\) to the orbital's equation: it records the energy shift and escape caused by contact \(\alpha=L,R\). The <dfn>wide-band approximation</dfn> takes these contact effects as energy independent over the energies of interest. Here \(\Sigma_\alpha^r=-i\Gamma_\alpha/2\), with any constant real shift absorbed into \(\varepsilon_0\). The positive escape widths \(\Gamma_L,\Gamma_R\) have units of energy. The <dfn>retarded Green function</dfn> \(G^r\) is the orbital's amplitude response to a source, with the response following the source and waves leaving into the leads. It gives the transmission probability \(T(E)\):</p>
 <div class="equation">\[
 G^r(E)=\frac{1}{E-\varepsilon_0+i(\Gamma_L+\Gamma_R)/2},
@@ -34,12 +34,12 @@ G^r(E)=\frac{1}{E-\varepsilon_0+i(\Gamma_L+\Gamma_R)/2},
   <div class="controls" id="level-controls" aria-label="Resonant level controls"></div>
 </div>
 <div id="level-readout" class="readout" aria-live="polite"></div>
-<details><summary>Check the prediction: why can a narrow resonance still reach one?</summary>
+<details open><summary>Why a narrow resonance can still reach one</summary>
 <p>A source \(s_L\) from the left produces \([E-\varepsilon_0+i\Gamma/2]\psi_0=s_L\), where \(\psi_0\) is the orbital amplitude and \(\Gamma=\Gamma_L+\Gamma_R\). In flux-normalized lead channels, the transmitted amplitude is \(-i\sqrt{\Gamma_L\Gamma_R}\,G^r\), up to a lead phase convention; its squared magnitude gives \(T\). At resonance, \(T=4\Gamma_L\Gamma_R/\Gamma^2\): scaling both widths by the same factor cancels between numerator and denominator. The peak height stays fixed, while its energy width shrinks. At a fixed energy away from resonance, transmission does decrease.</p>
 <p>The peak height alone does not set a finite-bias current. At \(\eta=0\), \(\int_{-\infty}^{\infty}T(E)\,dE=2\pi\Gamma_L\Gamma_R/(\Gamma_L+\Gamma_R)\). Scaling both widths by \(\lambda\) preserves the peak but scales this area by \(\lambda\), so the current at fixed bias tends to zero as the contacts close.</p>
 </details>
 <p>For a one-dimensional incoming channel, the density of right-moving states contains \(1/v\), while the particle flux contains \(v\), where \(v\) is group velocity. Their product is \(1/h\) per energy, with \(h\) Planck's constant: slower electrons are more numerous in the same energy interval. Let \(f_L(E),f_R(E)\) be the reservoir occupation probabilities and \(e&gt;0\) the elementary charge. Then \(I=(e/h)\int T(E)[f_L-f_R]\,dE\), with positive current defined for electron transfer from left to right. At zero temperature and small bias, the conductance is \(G_{\rm cond}=(e^2/h)T(E_F)\), where \(E_F\) is the common equilibrium Fermi energy. Even \(T=1\) gives a finite two-terminal resistance \(h/e^2\). Reservoir injection limits the current; this is not evidence of energy dissipation inside the elastic orbital. <a href="https://doi.org/10.1017/CBO9780511805776.003">Datta, chapter 2</a>; <a href="https://arxiv.org/abs/2008.01275">Datta and coauthors, introduction</a>.</p>
-<details><summary>Recover the peak and the lifetime</summary>
+<details open><summary>Recover the peak and the lifetime</summary>
 <p>At \(E=\varepsilon_0\), \(T_{\max}=4\Gamma_L\Gamma_R/(\Gamma_L+\Gamma_R)^2\leq1\). For total width \(\Gamma=\Gamma_L+\Gamma_R\), the single pole is \(\varepsilon_0-i\Gamma/2\). For a one-electron state initially localized on the orbital, the return amplitude is proportional to \(e^{-\Gamma t/(2\hbar)}\) and survival probability \(e^{-\Gamma t/\hbar}\), where \(t\) is elapsed time and \(\hbar=h/(2\pi)\). The amplitude e-folding time is \(2\hbar/\Gamma\); the probability e-folding time is \(\hbar/\Gamma\). These are exact for the ideal wide-band pole. They need not describe all decay near a lead band edge. Reservoir injection can maintain a steady occupation; this survival probability is not the mean orbital occupation under bias.</p>
 </details>
 <div class="buttons" data-export="level"></div>
@@ -48,7 +48,7 @@ G^r(E)=\frac{1}{E-\varepsilon_0+i(\Gamma_L+\Gamma_R)/2},
 
 <section class="note" id="chain">
 <h2>2. Let the leads continue</h2>
-<p>Replace the orbital by \(N\) sites, each with on-site energy \(\varepsilon_d\), and nearest-neighbor hopping \(-t\). Here \(t&gt;0\) is an energy, not elapsed time. Attach a semi-infinite chain to each end. If all on-site energies and bonds match, drawing a box around \(N\) sites cannot create a scatterer. <strong>Predict:</strong> will changing the box length alter the transmission?</p>
+<p>Replace the orbital by \(N\) sites, each with on-site energy \(\varepsilon_d\), and nearest-neighbor hopping \(-t\). Here \(t&gt;0\) is an energy, not elapsed time. Attach a semi-infinite chain to each end. If all on-site energies and bonds match, drawing a box around \(N\) sites cannot create a scatterer. Changing that box length leaves the transmission unchanged.</p>
 <div class="equation">\[
 H_{nn}=\varepsilon_d,\quad H_{n,n+1}=-t,\qquad
 \Sigma^r(E)=\tau^2 g_s^r(E),\quad
@@ -63,11 +63,11 @@ g_s^r(E)=\frac{E-i\sqrt{4t_\ell^2-E^2}}{2t_\ell^2}
 </div>
 <div id="chain-readout" class="readout" aria-live="polite"></div>
 <p>Weak contacts partly reflect the wave at both ends. Repeated round trips interfere: energies that fit the chain can transmit strongly, while energies between those resonances cannot. Moving an on-site energy changes the propagation phase and the band alignment. A discrete spectrum alone does not tell us the current; the way those states connect to the leads matters.</p>
-<details><summary>Check the prediction and derive the lead response</summary>
+<details open><summary>Derive the matched-chain result and lead response</summary>
 <p>At the “Invisible box” setting, increasing \(N\) only moves the boundaries of the chosen device: every site and bond still belongs to the same uniform infinite chain. There is no interface to reflect a wave, so \(T=1\) throughout the open lead band. For \(N=1\), there is no internal device bond; changing \(t\) has no effect.</p>
 <p>Removing the endpoint of a semi-infinite lead exposes an identical endpoint. Its response must therefore satisfy \(g_s^r=[z-t_\ell^2g_s^r]^{-1}\), with \(z=E+i0^+\). Multiplication gives \(t_\ell^2(g_s^r)^2-zg_s^r+1=0\). Select the root with negative imaginary part inside the band and \(g_s^r\sim1/z\) far from it; this gives the displayed formula. The contact contributes \(\tau^2g_s^r\), because an excursion crosses the contact bond once in each direction.</p>
 </details>
-<details><summary>From a resolvent to the Caroli formula</summary>
+<details open><summary>From a resolvent to the Caroli formula</summary>
 <p>With the leads eliminated, \(G^r=[(E+i0^+)I-H-\Sigma_L^r-\Sigma_R^r]^{-1}\), \(G^a=(G^r)^\dagger\), and \(\Gamma_\alpha=i(\Sigma_\alpha^r-\Sigma_\alpha^a)\). An injected incoherent mixture is weighted by \(\Gamma_\alpha\), propagates through \(G^r\), and is collected by the other lead. The probability sum is a trace:</p>
 <div class="equation">\[
 T_{L\leftarrow R}=\operatorname{Tr}[\Gamma_LG^r\Gamma_RG^a].
@@ -80,7 +80,7 @@ T_{L\leftarrow R}=\operatorname{Tr}[\Gamma_LG^r\Gamma_RG^a].
 
 <section class="note" id="fano">
 <h2>3. A detour that stops traffic</h2>
-<p>A second orbital, of energy \(\varepsilon_s\), is attached to the conducting orbital by hopping \(-v\) but has no lead of its own. Keep \(\varepsilon_0=0\) and \(\Gamma=\Gamma_L+\Gamma_R=1\,\mathrm{eV}\). Nothing random happens on this side branch. <strong>Predict:</strong> when its energy equals the incident energy, does this extra place to visit help transmission?</p>
+<p>A second orbital, of energy \(\varepsilon_s\), is attached to the conducting orbital by hopping \(-v\) but has no lead of its own. Keep \(\varepsilon_0=0\) and \(\Gamma=\Gamma_L+\Gamma_R=1\,\mathrm{eV}\). Nothing random happens on this side branch. At the side orbital’s energy, this extra coherent path can block transmission.</p>
 <div class="equation">\[
 H=\begin{pmatrix}\varepsilon_0&-v\\-v&\varepsilon_s\end{pmatrix},
 \qquad
@@ -95,7 +95,7 @@ G^r_{00}=
   <div class="controls" id="fano-controls" aria-label="Interference controls"></div>
 </div>
 <div id="fano-readout" class="readout" aria-live="polite"></div>
-<details><summary>Check the prediction directly from the two orbital equations</summary>
+<details open><summary>Derive the zero from the two orbital equations</summary>
 <p>Let \(\psi_0\) and \(\psi_s\) be the conducting and side-orbital amplitudes. A source \(s_L\) enters only at the conducting orbital, so \((E-\varepsilon_0+i\Gamma/2)\psi_0+v\psi_s=s_L\) and \(v\psi_0+(E-\varepsilon_s)\psi_s=0\). At \(E=\varepsilon_s\) and \(v\ne0\), the second equation forces \(\psi_0=0\); the first permits a nonzero side amplitude \(\psi_s=s_L/v\). Since escape to \(R\) occurs only through \(\psi_0\), transmission vanishes. The electron is fully reflected; it is not irreversibly trapped on the side orbital.</p>
 </details>
 <p>The limit is worth a second look: at any nonzero \(v\), transmission is exactly zero at \(E=\varepsilon_s\); at \(v=0\), the side orbital is disconnected and the conducting level recovers its ordinary resonance. The zero becomes arbitrarily narrow as \(v\) shrinks. Energy resolution and temperature decide whether it has an appreciable effect on a measured current.</p>
@@ -105,7 +105,7 @@ G^r_{00}=
 
 <section class="note" id="bias">
 <h2>4. Who fills the level?</h2>
-<p>A transmission curve says what an incoming electron can do. Reservoir occupations say whether an electron is supplied. Let \(\mu_\alpha\) be reservoir \(\alpha\)'s electrochemical potential, \(k_B\) Boltzmann's constant, and \(k_BT\) the thermal energy. The Fermi function \(f_\alpha\) is an occupation probability; \(n\) is the mean number of electrons on the single spin orbital, between zero and one. <strong>Predict:</strong> at equilibrium, can the level be half full while the current vanishes? At large positive bias, which contact controls the filling?</p>
+<p>A transmission curve says what an incoming electron can do. Reservoir occupations say whether an electron is supplied. Let \(\mu_\alpha\) be reservoir \(\alpha\)'s electrochemical potential, \(k_B\) Boltzmann's constant, and \(k_BT\) the thermal energy. The Fermi function \(f_\alpha\) is an occupation probability; \(n\) is the mean number of electrons on the single spin orbital, between zero and one. A half-filled level can carry zero net current at equilibrium; under bias, the relative contact strengths determine its filling.</p>
 <div class="equation">\[
 f_\alpha(E)=\frac{1}{1+e^{(E-\mu_\alpha)/(k_BT)}},\quad
 I=\frac{e}{h}\int T(f_L-f_R)\,dE,\quad
@@ -118,12 +118,12 @@ n=\int\frac{dE}{2\pi}|G^r|^2(\Gamma_L f_L+\Gamma_R f_R).
   <div class="controls" id="bias-controls" aria-label="Finite bias controls"></div>
 </div>
 <div id="bias-readout" class="readout" aria-live="polite"></div>
-<details><summary>Check the prediction: how can half filling coexist with zero current?</summary>
+<details open><summary>How half filling coexists with zero current</summary>
 <p>For total width \(\Gamma=\Gamma_L+\Gamma_R\), write the occupation integral as \(n=\int [A(E)/(2\pi)]\,[\Gamma_Lf_L(E)+\Gamma_Rf_R(E)]/\Gamma\,dE\). The spectral density counts available orbital weight; the second factor tells how strongly that weight is occupied. At equilibrium \(f_L=f_R\), so the directed currents cancel. If also \(\varepsilon_0=\mu_L=\mu_R=0\), symmetry gives exactly \(n=1/2\) on the infinite energy axis. The displayed finite-window result is slightly smaller because it omits occupied spectral tails.</p>
 <p>When positive bias puts essentially the whole resonance between the two chemical potentials, \(f_L\simeq1\) and \(f_R\simeq0\) across its weight. Normalization of \(A/(2\pi)\) then gives \(n\simeq\Gamma_L/\Gamma\). This is an asymptotic statement: Lorentzian tails extend beyond every finite bias window. The source can fill slowly even while the drain empties quickly.</p>
 </details>
 <p><strong>Finite-bias assumption:</strong> \(\mu_L=+eV/2\) and \(\mu_R=-eV/2\). For example, \(V=1\,\mathrm{V}\) gives \(\mu_L=+0.5\,\mathrm{eV}\) and \(\mu_R=-0.5\,\mathrm{eV}\). The orbital energy and the wide-band self-energies are held fixed as \(V\) changes; there is no Poisson calculation, charging energy, interaction correction, or bias-induced structural change. This is an assigned voltage model, not a prediction of the internal potential of a real device. At \(\eta=0\), the currents entering from the two leads obey \(I_L+I_R=0\).</p>
-<details><summary>Why the missing Pauli factors are not missing</summary>
+<details open><summary>Why the missing Pauli factors are not missing</summary>
 <p>For elastic independent-electron transport, the net occupation factor is \(f_L(1-f_R)-f_R(1-f_L)=f_L-f_R\). Equal occupations cancel the two directed flows. At \(T=0\), the current is an integral over the interval between the chemical potentials; thermal broadening replaces its sharp edges by smooth weights.</p>
 </details>
 <div class="buttons" data-export="bias"></div>
@@ -132,7 +132,7 @@ n=\int\frac{dE}{2\pi}|G^r|^2(\Gamma_L f_L+\Gamma_R f_R).
 
 <section class="note" id="eta">
 <h2>5. The imaginary-number audit</h2>
-<p>The symbol \(i\eta\) can mean a retarded limiting prescription, a finite numerical smoothing, or an explicitly modeled loss. These are different claims about the same algebra. Here \(\eta\ge0\) is an energy; \(\mathbf1\) is the identity matrix, \(G_\eta^a=(G_\eta^r)^\dagger\), and \(A=i(G_\eta^r-G_\eta^a)\) is the spectral function. For the one orbital plotted below, \(A/(2\pi)\) is the density of states and \(A_\alpha=\Gamma_\alpha|G_\eta^r|^2\) is the partial spectral weight supplied through physical lead \(\alpha\). <strong>Predict:</strong> if \(\eta\) is kept finite in the device resolvent, where does the missing incident probability go?</p>
+<p>The symbol \(i\eta\) can mean a retarded limiting prescription, a finite numerical smoothing, or an explicitly modeled loss. These are different claims about the same algebra. Here \(\eta\ge0\) is an energy; \(\mathbf1\) is the identity matrix, \(G_\eta^a=(G_\eta^r)^\dagger\), and \(A=i(G_\eta^r-G_\eta^a)\) is the spectral function. For the one orbital plotted below, \(A/(2\pi)\) is the density of states and \(A_\alpha=\Gamma_\alpha|G_\eta^r|^2\) is the partial spectral weight supplied through physical lead \(\alpha\). Keeping \(\eta\) finite without reinjection removes probability from the device.</p>
 <div class="equation">\[
 G_\eta^r=[(E+i\eta)\mathbf1-H-\Sigma_L^r(E)-\Sigma_R^r(E)]^{-1},\qquad
 A=G_\eta^r(\Gamma_L+\Gamma_R+2\eta\mathbf1)G_\eta^a.
@@ -145,14 +145,14 @@ A=G_\eta^r(\Gamma_L+\Gamma_R+2\eta\mathbf1)G_\eta^a.
   <div class="controls" id="eta-controls" aria-label="Numerical broadening controls"></div>
 </div>
 <div id="eta-readout" class="readout" aria-live="polite"></div>
-<details><summary>Check the prediction: does stronger absorption always remove more incident flux?</summary>
+<details open><summary>Why stronger absorption can instead increase reflection</summary>
 <p>For matched contacts, write \(\Gamma_L=\Gamma_R=\Gamma/2\). At resonance and \(\Gamma+2\eta&gt;0\), the three probabilities are \(T=\Gamma^2/(\Gamma+2\eta)^2\), \(R=(2\eta)^2/(\Gamma+2\eta)^2\), and absorbed probability \(4\Gamma\eta/(\Gamma+2\eta)^2\). They add to one. Increasing \(\eta\) lowers transmission, but the lost transmission is shared between reflection and absorption. For \(\Gamma&gt;0\) and very large \(\eta\), almost everything reflects: a strongly mismatched contact response prevents entry into the orbital.</p>
 </details>
 <h3>Change \(\eta\) and the grid separately</h3>
 <p>The table recomputes the full spectral area \(\int A\,dE/(2\pi)\) with the selected window and alignment. The exact finite-window area is an arctangent integral. Its difference from one is a window error; the sampled area's difference from that exact value is a quadrature error. Lowering \(\eta\) can expose an unresolved peak rather than improve the answer.</p>
 <div id="eta-table" class="table-scroll"></div>
 <p>The full spectral area is one over the infinite energy axis for this single normalized orbital. The contact part alone integrates to \(\Gamma/(\Gamma+2\eta)\), with \(\Gamma=\Gamma_L+\Gamma_R\). Algebraic current balance can hold even on a poorly resolved grid, so it does not by itself establish numerical convergence. Normalization of the full \(A\) therefore does <em>not</em> prove that a two-terminal current calculation is conserving. In the fixed-bias readout above, the missing current is computed from lead injection into the empty \(\eta\) reservoir. An isolated level (\(\Gamma=0\)) has no lead current; its \(\eta\)-broadened spectrum still tests the grid. Its occupation is not determined by the two physical reservoirs in the strict isolated limit.</p>
-<details><summary>A useful convergence order</summary>
+<details open><summary>A useful convergence order</summary>
 <ol>
   <li>Specify the physical contact self-energies and any actual scattering model.</li>
   <li>Make \(\eta\) small compared with the physical widths and any feature you need to resolve.</li>
